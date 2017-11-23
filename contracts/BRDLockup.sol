@@ -6,8 +6,8 @@ import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 /**
  * Contract BRDLockup keeps track of a vesting schedule for pre-sold tokens.
  * Pre-sold tokens are rewarded up to `numIntervals` times separated by an
- * `interval`. An equal amount of tokens (`allocation / numIntervals`) is
- * marked for reward each `interval`.
+ * `interval` of time. An equal amount of tokens (`allocation` divided by `numIntervals`)
+ * is marked for reward each `interval`.
  *
  * The owner of the contract will call processInterval() which will
  * update the allocation state. The owner of the contract should then
@@ -31,7 +31,7 @@ contract BRDLockup is Ownable {
   // the date at which allocations begin unlocking
   uint256 internal unlockDate;
 
-  // the current interval
+  // the current unlock interval
   uint256 internal currentInterval;
 
   // the interval at which allocations will be rewarded
@@ -86,6 +86,11 @@ contract BRDLockup is Ownable {
   // the total number of allocations
   function numAllocations() constant public returns (uint) {
     return allocations.length;
+  }
+
+  // the amount allocated for beneficiary at `_index`
+  function allocationAmount(uint _index) constant public returns (uint256) {
+    return allocations[_index].allocation;
   }
 
   // reward the beneficiary at `_index`

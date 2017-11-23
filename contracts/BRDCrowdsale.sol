@@ -11,13 +11,16 @@ import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 contract BRDCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
 
-  // the maximum amount of wei raised during this crowdsale
+  // maximum amount of wei raised during this crowdsale
   uint256 public cap;
 
-  // the crowdsale authorizer contract
+  // number of tokens assigned to target wallet
+  uint256 public ownerShare;
+
+  // crowdsale authorizer contract determines who can participate
   BRDCrowdsaleAuthorizer internal authorizer;
 
-  // the lockup contract
+  // the lockup contract holds presale authorization amounts
   BRDLockup internal lockup;
 
   // constructor
@@ -26,14 +29,18 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _startTime,   // crowdsale start time
     uint256 _endTime,     // crowdsale end time
     uint256 _rate,        // tokens per wei
-    address _wallet,      // beneficiary wallet
-    address _authorizer)  // initial crowdsale authorizer
+    uint256 _ownerShare,  // number of tokens assigned to target wallet
+    address _wallet,      // target funds wallet
+    address _authorizer)  // the first authorizer
     Crowdsale(_startTime, _endTime, _rate, _wallet)
   {
     require(_cap > 0);
     cap = _cap;
+    ownerShare = _ownerShare;
     authorizer = new BRDCrowdsaleAuthorizer(_authorizer);
     lockup = new BRDLockup(_endTime);
+    mintLockedUpTokens();
+    mintOwnerShareTokens();
   }
 
   // overriding Crowdsale#validPurchase
@@ -61,6 +68,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // overriding FinalizableCrowdsale#finalization
   // finalizes minting for the token contract, disabling further minting
   function finalization() internal {
+    // end minting
+    token.finishMinting();
     // issue the first lockup reward
     this.unlockTokens();
 
@@ -68,8 +77,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   }
 
   // unlocks tokens from the token lockup contract. no tokens are held by
-  // the lockup contract, just the amounts and times that tokens should be rewarded
-  // we process the amounts then mint tokens
+  // the lockup contract, just the amounts and times that tokens should be rewarded.
+  // the tokens are held by the crowdsale contract
   function unlockTokens() onlyOwner returns (bool _didIssueRewards) {
     // attempt to process the interval. it update the allocation bookkeeping
     // and will only return true when the interval should be processed
@@ -82,12 +91,28 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     for (uint _i = 0; _i < _numAllocations; _i++) {
       // attempt to unlock the reward
       var (_shouldReward, _to, _amount) = lockup.unlock(_i);
-      // if the beneficiary should be rewarded, mint those tokens
+      // if the beneficiary should be rewarded, send them tokens
       if (_shouldReward) {
-        token.mint(_to, _amount);
+        token.transfer(_to, _amount);
       }
     }
 
     return true;
+  }
+
+  // mints all locked up tokens, owned by this crowdsale contract
+  function mintLockedUpTokens() internal {
+    // the total number of allocations
+    uint _numAllocations = lockup.numAllocations();
+
+    // for every allocation, mint the total allocation amount
+    for (uint _i = 0; _i < _numAllocations; _i++) {
+      token.mint(this, lockup.allocationAmount(_i));
+    }
+  }
+
+  // mints the tokens owned by the crowdsale wallet
+  function mintOwnerShareTokens() internal {
+    token.mint(wallet, ownerShare);
   }
 }

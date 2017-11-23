@@ -1,8 +1,11 @@
 pragma solidity ^0.4.15;
 
 import 'zeppelin-solidity/contracts/token/MintableToken.sol';
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 contract BRDToken is MintableToken {
+  using SafeMath for uint256;
+
   string public name = "Bread Token";
   string public symbol = "BRD";
   uint256 public decimals = 18;
