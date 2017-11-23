@@ -1,5 +1,6 @@
 var BRDCrowdsale = artifacts.require('BRDCrowdsale');
 var BRDToken = artifacts.require('BRDToken');
+var BRDCrowdsaleAuthorizer = artifacts.require('BRDCrowdsaleAuthorizer');
 
 var decimals = 18;
 var exponent = (new web3.BigNumber(10)).pow(decimals);
@@ -15,6 +16,17 @@ contract('BRDCrowdsale', function(accounts) {
       });
     }).then(function(balance) {
       assert(balance.eq(expectedOwnerShare));
+    });
+  });
+
+  it('should set the contract owner as the initial authorizer', function() {
+    return BRDCrowdsale.deployed().then(function(instance) {
+      return instance.authorizer.call().then(function(authorizerAddr) {
+        var authorizer = BRDCrowdsaleAuthorizer.at(authorizerAddr);
+        return authorizer.isAuthorizer.call(accounts[0]);
+      });
+    }).then(function(contractCreatorIsAuthorizer) {
+      assert(contractCreatorIsAuthorizer);
     });
   });
 });
