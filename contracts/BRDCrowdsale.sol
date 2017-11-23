@@ -18,10 +18,10 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   uint256 public ownerShare;
 
   // crowdsale authorizer contract determines who can participate
-  BRDCrowdsaleAuthorizer internal authorizer;
+  BRDCrowdsaleAuthorizer public authorizer;
 
   // the lockup contract holds presale authorization amounts
-  BRDLockup internal lockup;
+  BRDLockup public lockup;
 
   // constructor
   function BRDCrowdsale(
@@ -79,7 +79,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // unlocks tokens from the token lockup contract. no tokens are held by
   // the lockup contract, just the amounts and times that tokens should be rewarded.
   // the tokens are held by the crowdsale contract
-  function unlockTokens() onlyOwner returns (bool _didIssueRewards) {
+  function unlockTokens() onlyOwner public returns (bool _didIssueRewards) {
     // attempt to process the interval. it update the allocation bookkeeping
     // and will only return true when the interval should be processed
     if (!lockup.processInterval()) return false;
