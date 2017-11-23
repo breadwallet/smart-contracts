@@ -50,4 +50,10 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
+
+  // overriding FinalizableCrowdsale#finalization
+  // finalizes minting for the token contract, disabling further minting
+  function finalization() internal {
+    token.finishMinting();
+  }
 }
