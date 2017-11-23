@@ -53,12 +53,12 @@ contract BRDLockup is Ownable {
   // update the allocation storage remaining balances
   function processInterval() onlyOwner returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
-    if (now - unlockDate <= currentInterval * intervalDuration) return false;
+    if (now.sub(unlockDate) <= currentInterval.mul(intervalDuration)) return false;
     // ensure we aren't done processing intervals
     if (currentInterval >= numIntervals) return false;
 
     // advance the current interval
-    currentInterval = currentInterval + 1;
+    currentInterval = currentInterval.add(1);
 
     // number of iterations to read all allocations
     uint _allocationsIndex = allocations.length;
@@ -74,7 +74,7 @@ contract BRDLockup is Ownable {
       }
       // otherwise the reward amount is the total allocation divided by the number of intervals
       else {
-        _amountToReward = allocations[_i].allocation / numIntervals;
+        _amountToReward = allocations[_i].allocation.div(numIntervals);
       }
       // update the allocation storage
       allocations[_i].currentReward = _amountToReward;
@@ -99,6 +99,8 @@ contract BRDLockup is Ownable {
     if (allocations[_index].currentInterval < currentInterval) {
       // record the currentInterval so the above check is useful
       allocations[_index].currentInterval = currentInterval;
+      // subtract the reward from their remaining balance
+      allocations[_index].remainingBalance = allocations[_index].remainingBalance.sub(allocations[_index].currentReward);
       // emit event
       Unlock(allocations[_index].beneficiary, allocations[_index].currentReward);
       // return value
