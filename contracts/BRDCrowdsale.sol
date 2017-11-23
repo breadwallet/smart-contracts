@@ -2,6 +2,7 @@ pragma solidity ^0.4.15;
 
 import './BRDToken.sol';
 import './BRDCrowdsaleAuthorizer.sol';
+import './BRDLockup.sol';
 import 'zeppelin-solidity/contracts/crowdsale/Crowdsale.sol';
 import 'zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol';
 import 'zeppelin-solidity/contracts/token/MintableToken.sol';
@@ -16,6 +17,9 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // the crowdsale authorizer contract
   BRDCrowdsaleAuthorizer internal authorizer;
 
+  // the lockup contract
+  BRDLockup internal lockup;
+
   // constructor
   function BRDCrowdsale(
     uint256 _cap,         // maximum wei raised
@@ -29,6 +33,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     require(_cap > 0);
     cap = _cap;
     authorizer = new BRDCrowdsaleAuthorizer(_authorizer);
+    lockup = new BRDLockup(_endTime);
   }
 
   // overriding Crowdsale#validPurchase
@@ -56,7 +61,33 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // overriding FinalizableCrowdsale#finalization
   // finalizes minting for the token contract, disabling further minting
   function finalization() internal {
-    token.finishMinting();
+    // issue the first lockup reward
+    this.unlockTokens();
+
     super.finalization();
+  }
+
+  // unlocks tokens from the token lockup contract. no tokens are held by
+  // the lockup contract, just the amounts and times that tokens should be rewarded
+  // we process the amounts then mint tokens
+  function unlockTokens() onlyOwner returns (bool _didIssueRewards) {
+    // attempt to process the interval. it update the allocation bookkeeping
+    // and will only return true when the interval should be processed
+    if (!lockup.processInterval()) return false;
+
+    // the total number of allocations
+    uint _numAllocations = lockup.numAllocations();
+
+    // for every allocation, attempt to unlock the reward
+    for (uint _i = 0; _i < _numAllocations; _i++) {
+      // attempt to unlock the reward
+      var (_shouldReward, _to, _amount) = lockup.unlock(_i);
+      // if the beneficiary should be rewarded, mint those tokens
+      if (_shouldReward) {
+        token.mint(_to, _amount);
+      }
+    }
+
+    return true;
   }
 }

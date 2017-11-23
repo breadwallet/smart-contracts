@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * Contract BRDCrowdsaleAuthorizer is used by the crowdsale website
  * to autorize wallets to participate in the crowdsale. Because all
- * participants must go through the KYC/AML phase, only wallets
+ * participants must go through the KYC/AML phase, only accounts
  * listed in this contract may contribute to the crowdsale
  */
 contract BRDCrowdsaleAuthorizer {
