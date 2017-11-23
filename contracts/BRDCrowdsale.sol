@@ -43,7 +43,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     mintOwnerShareTokens();
   }
 
-  // overriding Crowdsale#validPurchase
+  // overriding Crowdsale#createTokenContract
   function createTokenContract() internal returns (MintableToken) {
     return new BRDToken();
   }
