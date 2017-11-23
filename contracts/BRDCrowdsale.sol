@@ -37,7 +37,9 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
-  // @return true if investors can buy at the moment
+  // @return true if crowdsale participants can buy at the moment
+  // checks whether the cap has not been reached and the purchaser
+  // has been authorized
   function validPurchase() internal constant returns (bool) {
     bool withinCap = weiRaised.add(msg.value) <= cap;
     bool isAuthorized = authorizer.isAuthorized(msg.sender);
@@ -55,5 +57,6 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // finalizes minting for the token contract, disabling further minting
   function finalization() internal {
     token.finishMinting();
+    super.finalization();
   }
 }
