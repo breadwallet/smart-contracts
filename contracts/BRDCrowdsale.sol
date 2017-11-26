@@ -31,15 +31,16 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _rate,        // tokens per wei
     uint256 _ownerShare,  // number of tokens assigned to target wallet
     address _wallet,      // target funds wallet
-    address _authorizer)  // the first authorizer
+    address _authorizer,  // the first authorizer
+    uint256 _numUnlockIntervals,      // number of unlock intervals
+    uint256 _unlockIntervalDuration)  // amount of time between intervals
     Crowdsale(_startTime, _endTime, _rate, _wallet)
   {
     require(_cap > 0);
     cap = _cap;
     ownerShare = _ownerShare;
     authorizer = new BRDCrowdsaleAuthorizer(_authorizer);
-    lockup = new BRDLockup(_endTime);
-    mintLockedUpTokens();
+    lockup = new BRDLockup(_endTime, _numUnlockIntervals, _unlockIntervalDuration);
     mintOwnerShareTokens();
   }
 
@@ -76,6 +77,15 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     super.finalization();
   }
 
+  // adds a token allocation to the lockup contract. may only be called
+  // before the end of the crowdsale. will also mint the new token
+  // allocation with the crowdsale contract as the owner
+  function lockupTokens(address _to, uint256 _amount) onlyOwner {
+    require(!isFinalized);
+    lockup.pushAllocation(_to, _amount);
+    token.mint(this, _amount);
+  }
+
   // unlocks tokens from the token lockup contract. no tokens are held by
   // the lockup contract, just the amounts and times that tokens should be rewarded.
   // the tokens are held by the crowdsale contract
@@ -98,17 +108,6 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     }
 
     return true;
-  }
-
-  // mints all locked up tokens, owned by this crowdsale contract
-  function mintLockedUpTokens() internal {
-    // the total number of allocations
-    uint _numAllocations = lockup.numAllocations();
-
-    // for every allocation, mint the total allocation amount
-    for (uint _i = 0; _i < _numAllocations; _i++) {
-      token.mint(this, lockup.allocationAmount(_i));
-    }
   }
 
   // mints the tokens owned by the crowdsale wallet

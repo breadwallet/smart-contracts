@@ -12,9 +12,18 @@ module.exports = function(deployer, network, accounts) {
   const rate = (new web3.BigNumber(900)).mul(exponent);
   const wallet = accounts[0];
   const authorizer = accounts[0];
+  const numIntervals = 6;
+  const intervalDuration = 1; // XXX: temporary, should be (86400*30); // 30 days
 
   deployer.deploy(
     BRDCrowdsale,
-    cap, startTime, endTime, rate, ownerShare, wallet, authorizer
-  );
+    cap, startTime, endTime, rate, ownerShare, wallet, authorizer,
+    numIntervals, intervalDuration
+  ).then(function() {
+    // XXX: temporary, put actual presale allocations here
+    var crowdsale = BRDCrowdsale.at(BRDCrowdsale.address);
+    for (let i = 0; i < accounts.length; i++) {
+      crowdsale.lockupTokens(accounts[i], (new web3.BigNumber(6).mul(exponent)));
+    }
+  });
 };

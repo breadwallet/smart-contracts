@@ -35,27 +35,28 @@ contract BRDLockup is Ownable {
   uint256 internal currentInterval;
 
   // the interval at which allocations will be rewarded
-  uint256 internal constant intervalDuration = 30 days;
+  uint256 internal intervalDuration;
 
   // the number of total reward intervals, zero indexed
-  uint256 internal constant numIntervals = 6;
+  uint256 internal numIntervals;
 
   event Unlock(address indexed _to, uint256 _amount);
 
   // constructor
   // @param _crowdsaleEndDate - the date the crowdsale ends
-  function BRDLockup(uint256 _crowdsaleEndDate) {
+  function BRDLockup(uint256 _crowdsaleEndDate, uint256 _numIntervals, uint256 _intervalDuration) {
     unlockDate = _crowdsaleEndDate;
+    numIntervals = _numIntervals;
+    intervalDuration = _intervalDuration;
     currentInterval = 0;
-    // TODO: hard-code pushAllocation() calls here
   }
 
   // update the allocation storage remaining balances
   function processInterval() onlyOwner returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
-    if (now.sub(unlockDate) <= currentInterval.mul(intervalDuration)) return false;
-    // ensure we aren't done processing intervals
-    if (currentInterval >= numIntervals) return false;
+    bool correctInterval = now.sub(unlockDate) > currentInterval.mul(intervalDuration);
+    bool validInterval = currentInterval < numIntervals;
+    if (!correctInterval || !validInterval) return false;
 
     // advance the current interval
     currentInterval = currentInterval.add(1);
@@ -116,7 +117,8 @@ contract BRDLockup is Ownable {
   }
 
   // add a new allocation to the lockup
-  function pushAllocation(address _beneficiary, uint256 _numTokens) internal {
+  function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner {
+    require(now < unlockDate);
     allocations.push(Allocation(_beneficiary, _numTokens, _numTokens, 0, 0));
   }
 }
