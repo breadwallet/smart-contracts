@@ -7,7 +7,9 @@ module.exports = function(deployer, network, accounts) {
 
   const ownerShare = (new web3.BigNumber(54000000)).mul(exponent); // 54 mil BRD
   const cap = (new web3.BigNumber(67786)).mul(exponent);  // 67,786 ETH
-  const startTime = web3.eth.getBlock(web3.eth.blockNumber).timestamp + 1;
+  const minContribution = (new web3.BigNumber(1).mul(exponent)); // 1 ETH
+  const maxContribution = (new web3.BigNumber(3333).mul(exponent)); // 3333 ETH
+  const startTime = web3.eth.getBlock(web3.eth.blockNumber).timestamp + 1; // XXX: temporary
   const endTime = startTime + (86400*8); // 8 days
   const rate = (new web3.BigNumber(900)).mul(exponent);
   const wallet = accounts[0];
@@ -17,7 +19,9 @@ module.exports = function(deployer, network, accounts) {
 
   deployer.deploy(
     BRDCrowdsale,
-    cap, startTime, endTime, rate, ownerShare, wallet, authorizer,
+    cap, minContribution, maxContribution,
+    startTime, endTime, rate, ownerShare,
+    wallet, authorizer,
     numIntervals, intervalDuration
   ).then(function() {
     // XXX: temporary, put actual presale allocations here

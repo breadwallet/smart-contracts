@@ -14,6 +14,12 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // maximum amount of wei raised during this crowdsale
   uint256 public cap;
 
+  // minimum per-participant wei contribution
+  uint256 public minContribution;
+
+  // maximum per-participant wei contribution
+  uint256 public maxContribution;
+
   // number of tokens assigned to target wallet
   uint256 public ownerShare;
 
@@ -26,6 +32,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // constructor
   function BRDCrowdsale(
     uint256 _cap,         // maximum wei raised
+    uint256 _minWei,      // minimum per-contributor wei
+    uint256 _maxWei,      // maximum per-contributor wei
     uint256 _startTime,   // crowdsale start time
     uint256 _endTime,     // crowdsale end time
     uint256 _rate,        // tokens per wei
@@ -38,6 +46,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   {
     require(_cap > 0);
     cap = _cap;
+    minContribution = _minWei;
+    maxContribution = _maxWei;
     ownerShare = _ownerShare;
     authorizer = new BRDCrowdsaleAuthorizer(_authorizer);
     lockup = new BRDLockup(_endTime, _numUnlockIntervals, _unlockIntervalDuration);
@@ -51,12 +61,15 @@ contract BRDCrowdsale is FinalizableCrowdsale {
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if crowdsale participants can buy at the moment
-  // checks whether the cap has not been reached and the purchaser
-  // has been authorized
+  // checks whether the cap has not been reached, the purchaser has
+  // been authorized, and their contribution is within the min/max
+  // thresholds
   function validPurchase() internal constant returns (bool) {
     bool withinCap = weiRaised.add(msg.value) <= cap;
     bool isAuthorized = authorizer.isAuthorized(msg.sender);
-    return super.validPurchase() && withinCap && isAuthorized;
+    bool isMin = msg.value >= minContribution;
+    bool withinMax = (msg.value + token.balanceOf(msg.sender)) <= maxContribution;
+    return super.validPurchase() && withinCap && isAuthorized && isMin && withinMax;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
