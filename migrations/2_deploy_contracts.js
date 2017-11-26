@@ -1,33 +1,20 @@
 var BRDCrowdsale = artifacts.require("BRDCrowdsale");
+var constants = require('../constants.js');
 
 module.exports = function(deployer, network, accounts) {
-  // both BRDToken and Ether use the same decimals
-  const decimals = 18;
-  const exponent = (new web3.BigNumber(10)).pow(decimals);
-
-  const ownerShare = (new web3.BigNumber(54000000)).mul(exponent); // 54 mil BRD
-  const cap = (new web3.BigNumber(67786)).mul(exponent);  // 67,786 ETH
-  const minContribution = (new web3.BigNumber(1).mul(exponent)); // 1 ETH
-  const maxContribution = (new web3.BigNumber(3333).mul(exponent)); // 3333 ETH
-  const startTime = web3.eth.getBlock(web3.eth.blockNumber).timestamp + 1; // XXX: temporary
-  const endTime = startTime + (86400*8); // 8 days
-  const rate = (new web3.BigNumber(900)).mul(exponent);
-  const wallet = accounts[0];
-  const authorizer = accounts[0];
-  const numIntervals = 6;
-  const intervalDuration = 1; // XXX: temporary, should be (86400*30); // 30 days
+  var c = constants(web3, accounts, network);
 
   deployer.deploy(
     BRDCrowdsale,
-    cap, minContribution, maxContribution,
-    startTime, endTime, rate, ownerShare,
-    wallet, authorizer,
-    numIntervals, intervalDuration
+    c.cap, c.minContribution, c.maxContribution,
+    c.startTime, c.endTime, c.rate, c.ownerShare,
+    c.wallet, c.authorizer,
+    c.numIntervals, c.intervalDuration
   ).then(function() {
     // XXX: temporary, put actual presale allocations here
     var crowdsale = BRDCrowdsale.at(BRDCrowdsale.address);
     for (let i = 0; i < accounts.length; i++) {
-      crowdsale.lockupTokens(accounts[i], (new web3.BigNumber(6).mul(exponent)));
+      crowdsale.lockupTokens(accounts[i], (new web3.BigNumber(6).mul(c.exponent)));
     }
   });
 };

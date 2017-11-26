@@ -43,12 +43,12 @@ contract BRDCrowdsaleAuthorizer {
 
   // allow an account to participate in the crowdsale
   function authorizeAccount(address _newAccount) onlyCreatorOrAuthorizer() {
-    // don't allow duplicate authorizations
-    require(!authorizedAccounts[_newAccount]);
-    // allow the provided account to participate in the crowdsale
-    authorizedAccounts[_newAccount] = true;
-    // emit the Authorized event
-    Authorized(_newAccount);
+    if (!authorizedAccounts[_newAccount]) {
+      // allow the provided account to participate in the crowdsale
+      authorizedAccounts[_newAccount] = true;
+      // emit the Authorized event
+      Authorized(_newAccount);
+    }
   }
 
   // returns whether or not the provided _account is an authorizer

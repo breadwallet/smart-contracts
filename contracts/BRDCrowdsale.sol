@@ -68,7 +68,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     bool withinCap = weiRaised.add(msg.value) <= cap;
     bool isAuthorized = authorizer.isAuthorized(msg.sender);
     bool isMin = msg.value >= minContribution;
-    bool withinMax = (msg.value + token.balanceOf(msg.sender)) <= maxContribution;
+    uint256 alreadyContributed = token.balanceOf(msg.sender).div(rate);
+    bool withinMax = msg.value.add(alreadyContributed) <= maxContribution;
     return super.validPurchase() && withinCap && isAuthorized && isMin && withinMax;
   }
 
