@@ -67,6 +67,21 @@ contract('BRDCrowdsale', function(accounts) {
     });
   }
 
+  function awaitEndTime(contractPromise) {
+    return contractPromise.then(function(crowdsale) {
+      return crowdsale.endTime.call();
+    }).then(function(endTime) {
+      return new Promise(function(resolve, _) {
+        let nowTime = Math.floor(Date.now() / 1000);
+        let startInSecs = endTime.toNumber() - nowTime + 1;
+        console.log('starting in', endTime.toNumber(), nowTime, startInSecs);
+        setTimeout(function() {
+          resolve(contractPromise);
+        }, startInSecs*1000);
+      });
+    });
+  }
+
   it('should award the owner share upon contract creation', function() {
     return newContract().then(function(instance) {
       return instance.token.call().then(function(tokenAddr) {
@@ -221,6 +236,14 @@ contract('BRDCrowdsale', function(accounts) {
   });
 
   it('should not allow contributions once the end time has been reached', function() {
-
+    let newContractPromise = newContract({endTime: Math.floor(Date.now()/1000)+2});
+    let amountToSend = (new web3.BigNumber(4).mul(c.exponent)); // 4 eth
+    return awaitEndTime(awaitStartTime(secondAccountAuthorized(newContractPromise))).then(function(instance) {
+      return instance.sendTransaction({from: accounts[1], value: amountToSend});
+    }).then(function() {
+      assert(false, 'should have an error');
+    }).catch(function(err) {
+      assert((new String(err)).indexOf('revert') !== -1);
+    });
   });
 });
