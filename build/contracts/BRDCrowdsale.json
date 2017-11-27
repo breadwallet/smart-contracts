@@ -707,8 +707,122 @@
       "links": {},
       "address": "0xadff4d50dbb3bcbc44172471c1896d74e61adfe8",
       "updated_at": 1511756676676
+    },
+    "1511762505350": {
+      "events": {
+        "0x6823b073d48d6e3a7d385eeb601452d680e74bb46afe3255a7d778f3a9b17681": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "Finalized",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0x623b3804fa71d67900d064613da8f94b9617215ee90799290593e1745087ad18": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "purchaser",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "TokenPurchase",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x027574ad367ef36095444d67ae5b3c0570e95de0",
+      "updated_at": 1511762509116
+    },
+    "1511765927636": {
+      "events": {
+        "0x6823b073d48d6e3a7d385eeb601452d680e74bb46afe3255a7d778f3a9b17681": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "Finalized",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0x623b3804fa71d67900d064613da8f94b9617215ee90799290593e1745087ad18": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "purchaser",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "TokenPurchase",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x7e60b13b2520281d5c833b114afa1c355ea54247",
+      "updated_at": 1511768298560
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1511761321929
+  "updated_at": 1511768298560
 }
