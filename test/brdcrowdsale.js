@@ -1,6 +1,7 @@
 var BRDCrowdsale = artifacts.require('BRDCrowdsale');
 var BRDToken = artifacts.require('BRDToken');
 var BRDCrowdsaleAuthorizer = artifacts.require('BRDCrowdsaleAuthorizer');
+var BRDLockup = artifacts.require('BRDLockup');
 var constants = require('../constants.js');
 
 contract('BRDCrowdsale', function(accounts) {
@@ -74,11 +75,33 @@ contract('BRDCrowdsale', function(accounts) {
       return new Promise(function(resolve, _) {
         let nowTime = Math.floor(Date.now() / 1000);
         let startInSecs = endTime.toNumber() - nowTime + 1;
-        console.log('starting in', endTime.toNumber(), nowTime, startInSecs);
+        // console.log('starting in', endTime.toNumber(), nowTime, startInSecs);
         setTimeout(function() {
           resolve(contractPromise);
         }, startInSecs*1000);
       });
+    });
+  }
+
+  function presaleParticipants(contractPromise) {
+    return contractPromise.then(function(instance) {
+      let promises = [];
+      for (let i = 1; i < accounts.length; i++) { // start at 1 because account 0 has owner share
+        let amountToLockup = (new web3.BigNumber(tokensPerLockup).mul(c.exponent));
+        promises.push(instance.lockupTokens(accounts[i], amountToLockup));
+      }
+      return Promise.all(promises).then(function() { return instance; });
+    }).then(function() {
+      return contractPromise;
+    }).catch(function(err) {
+      console.log('error creating presale participants', err);
+      assert(false, 'presale error');
+    });
+  }
+
+  function waitFor(msec) {
+    return new Promise(function(r, _) {
+      setTimeout(function() { r(); }, msec);
     });
   }
 
@@ -244,6 +267,43 @@ contract('BRDCrowdsale', function(accounts) {
       assert(false, 'should have an error');
     }).catch(function(err) {
       assert((new String(err)).indexOf('revert') !== -1);
+    });
+  });
+
+  it('should not allow token unlock until crowdsale has ended', function() {
+    let crowdsale;
+    return presaleParticipants(awaitStartTime(newContract())).then(function(instance) {
+      crowdsale = instance;
+      return instance.unlockTokens({from: accounts[0]});
+    }).then(function() {
+      return crowdsale.lockup.call();
+    }).then(function(lockupAddr) {
+      let lockup = BRDLockup.at(lockupAddr);
+      return lockup.currentInterval.call();
+    }).then(function(lockupIntervalNumber) {
+      assert(lockupIntervalNumber.eq(new web3.BigNumber(0)));
+    });
+  });
+
+  it('should unlock first batch of tokens upon finalization', function() {
+    let crowdsale;
+    let contractPromise = newContract({endTime: Math.floor(Date.now()/1000)+2});
+    return awaitEndTime(presaleParticipants(contractPromise)).then(function(instance) {
+      crowdsale = instance;
+      return crowdsale.finalize({from: accounts[0]});
+    }).then(function() {
+      return crowdsale.token.call();
+    }).then(function(tokenAddr) {
+      let token = BRDToken.at(tokenAddr);
+      let promises = [];
+      for (let i = 0; i < accounts.length; i++) {
+        promises.push(token.balanceOf(accounts[i]));
+      }
+      return Promise.all(promises);
+    }).then(function(values) {
+      for (let i = 1; i < accounts.length; i++) { // start at 1 to ignore the owner share
+        assert(values[i].eq((new web3.BigNumber(1)).mul(c.exponent)), 'tokens not delivered'); // 1/6th of 6
+      }
     });
   });
 });
