@@ -36,7 +36,7 @@ contract('BRDCrowdsale', function(accounts) {
     return contractPromise.then(function (instance) {
       crowdsale = instance;
       return instance.authorizer.call();
-    }).catch().then(function(authorizerAddr) {
+    }).then(function(authorizerAddr) {
       authorizer = BRDCrowdsaleAuthorizer.at(authorizerAddr);
       return authorizer.authorizeAccount(accounts[1], {from: accounts[0]});
     }).then(function() {
@@ -193,5 +193,34 @@ contract('BRDCrowdsale', function(accounts) {
     }).catch(function(err) {
       assert((new String(err)).indexOf('revert') !== -1);
     });
+  });
+
+  it('should not allow contributions once the cap has been reached', function() {
+    // allow only 7 eth to be raised
+    let newContractPromise = newContract({cap: (new web3.BigNumber(7).mul(c.exponent))});
+    let amountToSend = (new web3.BigNumber(4).mul(c.exponent)); // 4 eth
+    var crowdsale;
+    return awaitStartTime(secondAccountAuthorized(newContractPromise)).then(function(instance) {
+      crowdsale = instance;
+      return instance.authorizer.call();
+    }).then(function(authorizerAddr) {
+      authorizer = BRDCrowdsaleAuthorizer.at(authorizerAddr);
+      return authorizer.authorizeAccount(accounts[2], {from: accounts[0]});
+    }).catch(function(err) {
+      console.log('err', err);
+      assert(false, 'should not have an error here');
+    }).then(function() {
+      return crowdsale.sendTransaction({from: accounts[1], value: amountToSend});
+    }).then(function() {
+      return crowdsale.sendTransaction({from: accounts[2], value: amountToSend});
+    }).then(function(values) {
+      assert(false, 'should have an error');
+    }).catch(function(err) {
+      assert((new String(err)).indexOf('revert') !== -1);
+    });
+  });
+
+  it('should not allow contributions once the end time has been reached', function() {
+
   });
 });
