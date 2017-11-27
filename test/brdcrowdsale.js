@@ -408,4 +408,6 @@ contract('BRDCrowdsale', function(accounts) {
       assert(currentInterval.eq(lockupInfo[0])); // the interval should not have advanced
     });
   });
+
+  // TODO: test sending/receiving post finalization
 });

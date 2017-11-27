@@ -1,17 +1,34 @@
 var abi = require('ethereumjs-abi');
 
-var signature = "BRDCrowdsale(uint256,uint256,uint256,uint256,uint256,uint256,uint256,address,address,uint256,uint256)";
+// var signature = "uint256,uint256,uint256,uint256,uint256,uint256,uint256,address,address,uint256,uint256";
+var signature = [
+  'uint256', // _cap
+  'uint256', //_minWei
+  'uint256', //_maxWei
+  'uint256', //_startTime
+  'uint256', //_endTime
+  'uint256', //_rate
+  'uint256', //_ownerShare
+  'address', //_wallet
+  'address', //_authorizer
+  'uint256', //_numUnlockIntervals
+  'uint256'  //_unlockIntervalDuration
+];
 
 module.exports = function(callback) {
   // ropsten values
   var network = 'ropsten';
   var accounts = ['0x001702423633bF0Bdba9d357403940A6A2F860f5'];
 
+  // kovan values
+  // XXX: add these
+
   var constants = require('../constants')(web3, accounts, network);
 
   var args = constants.creationArguments.map(function(arg) {
-    if (typeof arg.toDigits !== 'undefined') {
-      return arg.toDigits();
+    if (typeof arg == 'object' || typeof arg == 'number') {
+      var bn = new web3.BigNumber(arg);
+      return bn.toString(16);
     }
     return arg;
   });
@@ -19,6 +36,6 @@ module.exports = function(callback) {
   console.log('args');
   console.log(args);
 
-  console.log(abi.rawEncode(signature, args));
+  console.log(abi.rawEncode(signature, args).toString('hex'));
   callback();
 }
