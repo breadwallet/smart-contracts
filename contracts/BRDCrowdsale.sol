@@ -85,8 +85,9 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   function finalization() internal {
     // end minting
     token.finishMinting();
+
     // issue the first lockup reward
-    this.unlockTokens();
+    unlockTokens();
 
     super.finalization();
   }
