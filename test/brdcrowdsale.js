@@ -5,7 +5,7 @@ var constants = require('../constants.js');
 
 contract('BRDCrowdsale', function(accounts) {
   let c = constants(web3, accounts, 'development'); // note: do not use for startTime or endTime
-  var tokensPerLockup = 6;
+  let tokensPerLockup = 6;
   let expectedLockupShare = (new web3.BigNumber(accounts.length*tokensPerLockup)).mul(c.exponent);
 
   function newContract() {
@@ -168,6 +168,22 @@ contract('BRDCrowdsale', function(accounts) {
       return instance.sendTransaction({from: accounts[1], value: amountToSend});
     }).then(function() {
       assert(false, 'error expected');
+    }).catch(function(err) {
+      assert((new String(err)).indexOf('revert') !== -1);
+    });
+  });
+
+  it('should not allow duplicate transitions more than the max', function() {
+    let amountToSend = (new web3.BigNumber(1).mul(c.exponent));
+    let secondAmountToSend = (new web3.BigNumber(4.01).mul(c.exponent));
+    let crowdsale;
+    return awaitStartTime(secondAccountAuthorized()).then(function(instance) {
+      crowdsale = instance;
+      return instance.sendTransaction({from: accounts[1], value: amountToSend});
+    }).then(function() {
+      return crowdsale.sendTransaction({from: accounts[1], value: secondAmountToSend});
+    }).then(function() {
+      assert(false, 'should have an error');
     }).catch(function(err) {
       assert((new String(err)).indexOf('revert') !== -1);
     });
