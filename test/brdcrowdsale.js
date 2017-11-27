@@ -107,18 +107,19 @@ contract('BRDCrowdsale', function(accounts) {
 
   function unlockAllTokens(crowdsale, lockup) {
     return lockup.intervalDuration.call().then(function(intervalDuration) {
-      return waitFor(intervalDuration*1000);
+      return waitFor(intervalDuration.toNumber()*1000);
     }).then(function() {
       return crowdsale.unlockTokens({from: accounts[0]}).then(function() {
         return Promise.all([
           lockup.currentInterval.call(),
-          lockup.numIntervals.call()
+          lockup.numIntervals.call(),
+          lockup.intervalDuration.call(),
         ]);
       }).then(function(intervalInfo) {
         if (intervalInfo[0] < intervalInfo[1]) {
           return unlockAllTokens(crowdsale, lockup);
         } else {
-          return true;
+          return intervalInfo;
         }
       });
     });
@@ -377,6 +378,34 @@ contract('BRDCrowdsale', function(accounts) {
       for (let i = 1; i < accounts.length; i++) { // start at 1 to ignore the owner share
         assert(values[i].eq((new web3.BigNumber(tokensPerLockup)).mul(c.exponent)), 'tokens not delivered'); // all tokens
       }
+    });
+  });
+
+  it('should not allow another unlock after the last one', function() {
+    let crowdsale;
+    let lockup;
+    let lockupInfo;
+    let contractPromise = newContract({
+      endTime: Math.floor(Date.now()/1000)+2,
+      intervalDuration: 2, // 2 seconds
+    });
+    return awaitEndTime(presaleParticipants(contractPromise)).then(function(instance) {
+      crowdsale = instance;
+      return crowdsale.finalize({from: accounts[0]});
+    }).then(function() {
+      return crowdsale.lockup.call();
+    }).then(function(lockupAddr) {
+      lockup = BRDLockup.at(lockupAddr);
+      return unlockAllTokens(crowdsale, lockup);
+    }).then(function(_lockupInfo) {
+      lockupInfo = _lockupInfo;
+      return crowdsale.unlockTokens();
+    }).then(function() {
+      return waitFor(lockupInfo[2].toNumber()*1000);
+    }).then(function() {
+      return lockup.currentInterval.call();
+    }).then(function(currentInterval) {
+      assert(currentInterval.eq(lockupInfo[0])); // the interval should not have advanced
     });
   });
 });
