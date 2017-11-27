@@ -29,16 +29,16 @@ contract BRDLockup is Ownable {
   Allocation[] public allocations;
 
   // the date at which allocations begin unlocking
-  uint256 internal unlockDate;
+  uint256 public unlockDate;
 
   // the current unlock interval
-  uint256 internal currentInterval;
+  uint256 public currentInterval;
 
   // the interval at which allocations will be rewarded
-  uint256 internal intervalDuration;
+  uint256 public intervalDuration;
 
   // the number of total reward intervals, zero indexed
-  uint256 internal numIntervals;
+  uint256 public numIntervals;
 
   event Unlock(address indexed _to, uint256 _amount);
 
@@ -54,7 +54,7 @@ contract BRDLockup is Ownable {
   // update the allocation storage remaining balances
   function processInterval() onlyOwner returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
-    bool correctInterval = now.sub(unlockDate) > currentInterval.mul(intervalDuration);
+    bool correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
     bool validInterval = currentInterval < numIntervals;
     if (!correctInterval || !validInterval) return false;
 
