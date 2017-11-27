@@ -8,8 +8,13 @@ contract('BRDCrowdsale', function(accounts) {
   let tokensPerLockup = 6;
   let expectedLockupShare = (new web3.BigNumber(accounts.length*tokensPerLockup)).mul(c.exponent);
 
-  function newContract() {
+  function newContract(overrides) {
     let c = constants(web3, accounts, 'development');
+    if (overrides) {
+      Object.keys(overrides).forEach(function(k) {
+        c[k] = overrides[k];
+      });
+    }
     return BRDCrowdsale.new(
       c.cap, c.minContribution, c.maxContribution,
       c.startTime, c.endTime, c.rate, c.ownerShare,
@@ -24,10 +29,11 @@ contract('BRDCrowdsale', function(accounts) {
 
   // resolves to the crowdsale contract that has the second account
   // pre-authorized
-  function secondAccountAuthorized() {
+  function secondAccountAuthorized(contractPromise) {
     let crowdsale;
     let authorizer;
-    return newContract().then(function (instance) {
+    if (!contractPromise) contractPromise = newContract();
+    return contractPromise.then(function (instance) {
       crowdsale = instance;
       return instance.authorizer.call();
     }).catch().then(function(authorizerAddr) {
@@ -46,8 +52,8 @@ contract('BRDCrowdsale', function(accounts) {
 
   // takes a promise that resolves to a crowdsale,
   // waits until the crowdsale start time to resolve
-  function awaitStartTime(crowdsale) {
-    return crowdsale.then(function(crowdsale) {
+  function awaitStartTime(contractPromise) {
+    return contractPromise.then(function(crowdsale) {
       return crowdsale.startTime.call();
     }).then(function(startTime) {
       return new Promise(function(resolve, _) {
@@ -55,7 +61,7 @@ contract('BRDCrowdsale', function(accounts) {
         let startInSecs = startTime.toNumber() - nowTime;
         // console.log('starting in', startTime.toNumber(), nowTime, startInSecs);
         setTimeout(function() {
-          resolve(crowdsale);
+          resolve(contractPromise);
         }, startInSecs*1000);
       });
     });
