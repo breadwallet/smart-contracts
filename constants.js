@@ -8,11 +8,11 @@ module.exports = function(web3, accounts, network) {
 
   c.ownerShare = (new web3.BigNumber(54000000)).mul(c.exponent); // 54 mil BRD
   c.cap = (new web3.BigNumber(67786)).mul(c.exponent);  // 67,786 ETH
-  c.minContribution = (new web3.BigNumber(1).mul(c.exponent)); // 1 ETH
-  c.maxContribution = (new web3.BigNumber(3333).mul(c.exponent)); // 3333 ETH
+  c.minContribution = (new web3.BigNumber(1)).mul(c.exponent); // 1 ETH
+  c.maxContribution = (new web3.BigNumber(3333)).mul(c.exponent); // 3333 ETH
   c.startTime = 1513296000; // dec 15 00:00:00 GMT
   c.endTime = c.startTime + (86400*8); // 8 days
-  c.rate = (new web3.BigNumber(900)); // tokens per wei
+  c.rate = new web3.BigNumber(900); // tokens per eth
   c.wallet = accounts[0];
   c.authorizer = accounts[0];
   c.numIntervals = 6;
@@ -21,9 +21,19 @@ module.exports = function(web3, accounts, network) {
   if (network == 'development') {
     c.startTime = Math.floor(Date.now() / 1000) + 1; // now + N
     c.endTime = c.startTime + 30; // + 30 seconds
-    c.cap = (new web3.BigNumber(100).mul(c.exponent)); // 100 ETH
+    c.cap = (new web3.BigNumber(100)).mul(c.exponent); // 100 ETH
     c.maxContribution = c.minContribution.mul(5); // 5 ETH
     c.intervalDuration = 5; // 5 seconds
+  }
+
+  if (network == 'kovan' || network == 'ropsten') {
+    c.startTime = 1511784000; // nov 27 12:00:00 GMT
+    c.endTime = c.startTime + (86400*6); // 6 days
+    c.minContribution = (new web3.BigNumber(.001)).mul(c.exponent); // .001 eth
+    c.maxContribution = (new web3.BigNumber(1).mul(c.exponent)); // 1 eth
+    c.rate = new web3.BigNumber(90000);  // tokens per eth
+    c.cap = (new web3.BigNumber(50)).mul(c.exponent);
+    c.intervalDuration = 6*3600; // 6 hrs
   }
 
   c.creationArguments = [
