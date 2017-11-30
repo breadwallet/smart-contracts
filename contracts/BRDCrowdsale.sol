@@ -29,6 +29,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // the lockup contract holds presale authorization amounts
   BRDLockup public lockup;
 
+  event Preallocate(address indexed _to, uint256 _amount);
+
   // constructor
   function BRDCrowdsale(
     uint256 _cap,         // maximum wei raised
@@ -90,6 +92,14 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     unlockTokens();
 
     super.finalization();
+  }
+
+  // mints tokens directly to the beneficiary `_amount`. this is used
+  // for OOB purchasers of the tokens
+  function allocateOOBTokenPurchase(address _to, uint256 _amount) onlyOwner {
+    require(!isFinalized);
+    token.mint(_to, _amount);
+    Preallocate(_to, _amount);
   }
 
   // adds a token allocation to the lockup contract. may only be called
