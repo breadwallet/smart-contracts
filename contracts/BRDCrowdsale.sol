@@ -64,19 +64,19 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // been authorized, and their contribution is within the min/max
   // thresholds
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) <= cap;
-    bool isAuthorized = authorizer.isAuthorized(msg.sender);
-    bool isMin = msg.value >= minContribution;
-    uint256 alreadyContributed = token.balanceOf(msg.sender).div(rate);
-    bool withinMax = msg.value.add(alreadyContributed) <= maxContribution;
-    return super.validPurchase() && withinCap && isAuthorized && isMin && withinMax;
+    bool _withinCap = weiRaised.add(msg.value) <= cap;
+    bool _isAuthorized = authorizer.isAuthorized(msg.sender);
+    bool _isMin = msg.value >= minContribution;
+    uint256 _alreadyContributed = token.balanceOf(msg.sender).div(rate);
+    bool _withinMax = msg.value.add(_alreadyContributed) <= maxContribution;
+    return super.validPurchase() && _withinCap && _isAuthorized && _isMin && _withinMax;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised >= cap;
-    return super.hasEnded() || capReached;
+    bool _capReached = weiRaised >= cap;
+    return super.hasEnded() || _capReached;
   }
 
   // overriding FinalizableCrowdsale#finalization
@@ -97,9 +97,9 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     // call the parent method to mint tokens to the beneficiary
     super.buyTokens(_beneficiary);
     // calculate the owner share of tokens
-    uint256 ownerTokens = msg.value.mul(ownerRate);
-    // mind the owner share and send to the owner wallet
-    token.mint(wallet, ownerTokens);
+    uint256 _ownerTokens = msg.value.mul(ownerRate);
+    // mint the owner share and send to the owner wallet
+    token.mint(wallet, _ownerTokens);
   }
 
   // adds a token allocation to the lockup contract. may only be called
