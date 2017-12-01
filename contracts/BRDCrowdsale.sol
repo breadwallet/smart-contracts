@@ -23,6 +23,9 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // how many token unites the owner gets per buyer wei
   uint256 public ownerRate;
 
+  // number of tokens per 100 to lock up in lockupTokens()
+  uint256 public bonusRate;
+
   // crowdsale authorizer contract determines who can participate
   BRDCrowdsaleAuthorizer public authorizer;
 
@@ -38,6 +41,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _endTime,     // crowdsale end time
     uint256 _rate,        // tokens per wei
     uint256 _ownerRate,   // owner tokens per buyer wei
+    uint256 _bonusRate,   // percentage of tokens to lockup
     address _wallet,      // target funds wallet
     address _authorizer,  // the first authorizer
     uint256 _numUnlockIntervals,      // number of unlock intervals
@@ -49,6 +53,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     minContribution = _minWei;
     maxContribution = _maxWei;
     ownerRate = _ownerRate;
+    bonusRate = _bonusRate;
     authorizer = new BRDCrowdsaleAuthorizer(_authorizer);
     lockup = new BRDLockup(_endTime, _numUnlockIntervals, _unlockIntervalDuration);
   }
@@ -102,15 +107,28 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     token.mint(wallet, _ownerTokens);
   }
 
-  // adds a token allocation to the lockup contract. may only be called
-  // before the end of the crowdsale. will also mint the new token
-  // allocation with the crowdsale contract as the owner
-  function lockupTokens(address _to, uint256 _amount) onlyOwner {
+  // mints _amount tokens to the _beneficiary minus the bonusRate
+  // tokens to be locked up via the lockup contract. locked up tokens
+  // are sent to the contract and may be unlocked according to
+  // the lockup configuration after the sale ends
+  function lockupTokens(address _beneficiary, uint256 _amount) onlyOwner {
     require(!isFinalized);
-    // create the allocation in the lockup contract
-    lockup.pushAllocation(_to, _amount);
-    // mint tokens to the
-    token.mint(this, _amount);
+
+    // calculate the owner share of tokens
+    uint256 _ownerTokens = ownerRate.mul(_amount).div(rate);
+    // mint the owner share and send to the owner wallet
+    token.mint(wallet, _ownerTokens);
+
+    // calculate the amount of tokens to be locked up
+    uint256 _lockupTokens = bonusRate.mul(_amount).div(100);
+    // create the locked allocation in the lockup contract
+    lockup.pushAllocation(_beneficiary, _lockupTokens);
+    // mint locked tokens to the crowdsale contract to later be unlocked
+    token.mint(this, _lockupTokens);
+
+    // the non-bonus tokens are immediately rewarded
+    uint256 _remainder = _amount.sub(_lockupTokens);
+    token.mint(_beneficiary, _remainder);
   }
 
   // unlocks tokens from the token lockup contract. no tokens are held by
