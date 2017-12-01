@@ -52,12 +52,12 @@ contract BRDCrowdsaleAuthorizer {
   }
 
   // returns whether or not the provided _account is an authorizer
-  function isAuthorizer(address _account) constant returns (bool _isAuthorizer) {
+  function isAuthorizer(address _account) constant public returns (bool _isAuthorizer) {
     return authorizers[_account] == true;
   }
 
   // returns whether or not the provided _account is authorized to participate in the crowdsale
-  function isAuthorized(address _account) constant returns (bool _authorized) {
+  function isAuthorized(address _account) constant public returns (bool _authorized) {
     return authorizedAccounts[_account] == true;
   }
 

@@ -54,7 +54,7 @@ contract BRDLockup is Ownable {
   }
 
   // update the allocation storage remaining balances
-  function processInterval() onlyOwner returns (bool _shouldProcessRewards) {
+  function processInterval() onlyOwner public returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
     bool _correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
     bool _validInterval = currentInterval < numIntervals;
@@ -97,7 +97,7 @@ contract BRDLockup is Ownable {
   }
 
   // reward the beneficiary at `_index`
-  function unlock(uint _index) onlyOwner returns (bool _shouldReward, address _beneficiary, uint256 _rewardAmount) {
+  function unlock(uint _index) onlyOwner public returns (bool _shouldReward, address _beneficiary, uint256 _rewardAmount) {
     // ensure the beneficiary is not rewarded twice during the same interval
     if (allocations[_index].currentInterval < currentInterval) {
       // record the currentInterval so the above check is useful
