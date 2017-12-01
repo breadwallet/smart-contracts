@@ -1,7 +1,7 @@
 pragma solidity ^0.4.15;
 
-import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
-import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * Contract BRDLockup keeps track of a vesting schedule for pre-sold tokens.
@@ -46,7 +46,7 @@ contract BRDLockup is Ownable {
 
   // constructor
   // @param _crowdsaleEndDate - the date the crowdsale ends
-  function BRDLockup(uint256 _crowdsaleEndDate, uint256 _numIntervals, uint256 _intervalDuration) {
+  function BRDLockup(uint256 _crowdsaleEndDate, uint256 _numIntervals, uint256 _intervalDuration)  public {
     unlockDate = _crowdsaleEndDate;
     numIntervals = _numIntervals;
     intervalDuration = _intervalDuration;
@@ -119,7 +119,7 @@ contract BRDLockup is Ownable {
   }
 
   // add a new allocation to the lockup
-  function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner {
+  function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner  public {
     require(now < unlockDate);
     allocations.push(Allocation(_beneficiary, _numTokens, _numTokens, 0, 0));
     Lock(_beneficiary, _numTokens);

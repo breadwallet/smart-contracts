@@ -1,12 +1,12 @@
 pragma solidity ^0.4.15;
 
-import './BRDToken.sol';
-import './BRDCrowdsaleAuthorizer.sol';
-import './BRDLockup.sol';
-import 'zeppelin-solidity/contracts/crowdsale/Crowdsale.sol';
-import 'zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol';
-import 'zeppelin-solidity/contracts/token/MintableToken.sol';
-import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+import "./BRDToken.sol";
+import "./BRDCrowdsaleAuthorizer.sol";
+import "./BRDLockup.sol";
+import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
+import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
+import "zeppelin-solidity/contracts/token/MintableToken.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract BRDCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -47,7 +47,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _numUnlockIntervals,      // number of unlock intervals
     uint256 _unlockIntervalDuration)  // amount of time between intervals
     Crowdsale(_startTime, _endTime, _rate, _wallet)
-  {
+   public {
     require(_cap > 0);
     cap = _cap;
     minContribution = _minWei;
@@ -111,7 +111,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // tokens to be locked up via the lockup contract. locked up tokens
   // are sent to the contract and may be unlocked according to
   // the lockup configuration after the sale ends
-  function lockupTokens(address _beneficiary, uint256 _amount) onlyOwner {
+  function lockupTokens(address _beneficiary, uint256 _amount) onlyOwner  public {
     require(!isFinalized);
 
     // calculate the owner share of tokens

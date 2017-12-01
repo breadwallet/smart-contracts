@@ -18,7 +18,7 @@ contract BRDCrowdsaleAuthorizer {
   event Authorized(address indexed _to);
 
   // constructor
-  function BRDCrowdsaleAuthorizer(address _initialAuthorzer) {
+  function BRDCrowdsaleAuthorizer(address _initialAuthorzer)  public {
     // retain the contract creator
     contractCreator = msg.sender;
     // retain the initial authorizer
@@ -27,14 +27,14 @@ contract BRDCrowdsaleAuthorizer {
 
   // add an authorizer to the authorizers mapping. the _newAuthorizer will
   // be able to add other authorizers and authorize crowdsale participants
-  function addAuthorizer(address _newAuthorizer) onlyCreatorOrAuthorizer() {
+  function addAuthorizer(address _newAuthorizer) onlyCreatorOrAuthorizer()  public {
     // allow the provided address to authorize accounts
     authorizers[_newAuthorizer] = true;
   }
 
   // remove an authorizer from the authorizers mapping. the _bannedAuthorizer will
   // no longer have permission to do anything on this contract
-  function removeAuthorizer(address _bannedAuthorizer) onlyCreatorOrAuthorizer() {
+  function removeAuthorizer(address _bannedAuthorizer) onlyCreatorOrAuthorizer()  public {
     // only attempt to remove the authorizer if they are currently authorized
     require(authorizers[_bannedAuthorizer]);
     // remove the authorizer
@@ -42,7 +42,7 @@ contract BRDCrowdsaleAuthorizer {
   }
 
   // allow an account to participate in the crowdsale
-  function authorizeAccount(address _newAccount) onlyCreatorOrAuthorizer() {
+  function authorizeAccount(address _newAccount) onlyCreatorOrAuthorizer()  public {
     if (!authorizedAccounts[_newAccount]) {
       // allow the provided account to participate in the crowdsale
       authorizedAccounts[_newAccount] = true;
