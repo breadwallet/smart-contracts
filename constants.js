@@ -13,6 +13,7 @@ module.exports = function(web3, accounts, network) {
   c.endTime = c.startTime + (86400*8); // 8 days
   c.rate = new web3.BigNumber(900); // tokens per eth
   c.ownerRate = new web3.BigNumber(300); // tokens per buyer eth
+  c.bonusRate = new web3.BigNumber(20); // percentage of tokens to lock up
   c.wallet = accounts[0];
   c.authorizer = accounts[0];
   c.numIntervals = 6;
