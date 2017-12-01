@@ -20,8 +20,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // maximum per-participant wei contribution
   uint256 public maxContribution;
 
-  // number of tokens assigned to target wallet
-  uint256 public ownerShare;
+  // how many token unites the owner gets per buyer wei
+  uint256 public ownerRate;
 
   // crowdsale authorizer contract determines who can participate
   BRDCrowdsaleAuthorizer public authorizer;
@@ -39,7 +39,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _startTime,   // crowdsale start time
     uint256 _endTime,     // crowdsale end time
     uint256 _rate,        // tokens per wei
-    uint256 _ownerShare,  // number of tokens assigned to target wallet
+    uint256 _ownerRate,   // owner tokens per buyer wei
     address _wallet,      // target funds wallet
     address _authorizer,  // the first authorizer
     uint256 _numUnlockIntervals,      // number of unlock intervals
@@ -50,10 +50,9 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     cap = _cap;
     minContribution = _minWei;
     maxContribution = _maxWei;
-    ownerShare = _ownerShare;
+    ownerRate = _ownerRate;
     authorizer = new BRDCrowdsaleAuthorizer(_authorizer);
     lockup = new BRDLockup(_endTime, _numUnlockIntervals, _unlockIntervalDuration);
-    mintOwnerShareTokens();
   }
 
   // overriding Crowdsale#createTokenContract
@@ -102,12 +101,25 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     Preallocate(_to, _amount);
   }
 
+  // overriding Crowdsale#buyTokens
+  // mints the ownerRate of tokens in addition to calling the super method
+  function buyTokens(address _beneficiary) public payable {
+    // call the parent method to mint tokens to the beneficiary
+    super.buyTokens(_beneficiary);
+    // calculate the owner share of tokens
+    uint256 ownerTokens = msg.value.mul(ownerRate);
+    // mind the owner share and send to the owner wallet
+    token.mint(wallet, ownerTokens);
+  }
+
   // adds a token allocation to the lockup contract. may only be called
   // before the end of the crowdsale. will also mint the new token
   // allocation with the crowdsale contract as the owner
   function lockupTokens(address _to, uint256 _amount) onlyOwner {
     require(!isFinalized);
+    // create the allocation in the lockup contract
     lockup.pushAllocation(_to, _amount);
+    // mint tokens to the
     token.mint(this, _amount);
   }
 
@@ -133,10 +145,5 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     }
 
     return true;
-  }
-
-  // mints the tokens owned by the crowdsale wallet
-  function mintOwnerShareTokens() internal {
-    token.mint(wallet, ownerShare);
   }
 }
