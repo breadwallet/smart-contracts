@@ -7,7 +7,7 @@ module.exports = function(deployer, network, accounts) {
   deployer.deploy(
     BRDCrowdsale,
     c.cap, c.minContribution, c.maxContribution,
-    c.startTime, c.endTime, c.rate, c.ownerShare,
+    c.startTime, c.endTime, c.rate, c.ownerRate,
     c.wallet, c.authorizer,
     c.numIntervals, c.intervalDuration
   ).then(function() {

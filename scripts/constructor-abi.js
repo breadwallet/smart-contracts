@@ -8,7 +8,7 @@ var signature = [
   'uint256', //_startTime
   'uint256', //_endTime
   'uint256', //_rate
-  'uint256', //_ownerShare
+  'uint256', //_ownerRate
   'address', //_wallet
   'address', //_authorizer
   'uint256', //_numUnlockIntervals
