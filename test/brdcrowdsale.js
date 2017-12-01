@@ -8,6 +8,7 @@ contract('BRDCrowdsale', function(accounts) {
   let c = constants(web3, accounts, 'development'); // note: do not use for startTime or endTime
   let tokensPerLockup = 6;
   let expectedLockupShare = (new web3.BigNumber(accounts.length*tokensPerLockup)).mul(c.exponent);
+  expectedLockupShare = c.bonusRate.mul(expectedLockupShare).div(100);
 
   function newContract(overrides) {
     let c = constants(web3, accounts, 'development');
@@ -18,7 +19,8 @@ contract('BRDCrowdsale', function(accounts) {
     }
     return BRDCrowdsale.new(
       c.cap, c.minContribution, c.maxContribution,
-      c.startTime, c.endTime, c.rate, c.ownerRate,
+      c.startTime, c.endTime,
+      c.rate, c.ownerRate, c.bonusRate,
       c.wallet, c.authorizer,
       c.numIntervals, c.intervalDuration,
       {from: accounts[0]}
@@ -142,7 +144,7 @@ contract('BRDCrowdsale', function(accounts) {
       assert(balance.eq(expectedLockupShare), 'expected lockup share does not match');
     });
   });
-
+  
   it('should set the contract owner as the initial authorizer', function() {
     return newContract().then(function(instance) {
       return instance.authorizer.call().then(function(authorizerAddr) {
@@ -351,7 +353,36 @@ contract('BRDCrowdsale', function(accounts) {
       return Promise.all(promises);
     }).then(function(values) {
       for (let i = 1; i < accounts.length; i++) { // start at 1 to ignore the owner share
-        assert(values[i].eq((new web3.BigNumber(tokensPerLockup/6)).mul(c.exponent)), 'tokens not delivered'); // 1/6th of 6
+        // 6 tokens * .2 bonus / 6 intervals
+        var unlockedTokensPerInterval = c.bonusRate.mul((new web3.BigNumber(tokensPerLockup)).mul(c.exponent)).div(100).div(6);
+        // 6 tokens - (6 tokens * .2 bonus)
+        var initialDelivery = (new web3.BigNumber(tokensPerLockup)).mul(c.exponent).sub(unlockedTokensPerInterval.mul(6));
+        var expectedBalance = initialDelivery.add(unlockedTokensPerInterval);
+        assert(values[i].eq(expectedBalance), 'tokens not delivered');
+      }
+    });
+  });
+
+  it('should immediately mint non-bonus tokens to the beneficiary', function() {
+    let crowdsale;
+    let contractPromise = newContract({endTime: Math.floor(Date.now()/1000)+2});
+    return presaleParticipants(contractPromise).then(function(instance) {
+      crowdsale = instance;
+      return crowdsale.token.call();
+    }).then(function(tokenAddr) {
+      let token = BRDToken.at(tokenAddr);
+      let promises = [];
+      for (let i = 0; i < accounts.length; i++) {
+        promises.push(token.balanceOf(accounts[i]));
+      }
+      return Promise.all(promises);
+    }).then(function(values) {
+      for (let i = 1; i < accounts.length; i++) { // start at 1 to ignore the owner share
+        // 6 tokens * .2 bonus / 6 intervals
+        var unlockedTokensPerInterval = c.bonusRate.mul((new web3.BigNumber(tokensPerLockup)).mul(c.exponent)).div(100).div(6);
+        // 6 tokens - (6 tokens * .2 bonus)
+        var initialDelivery = (new web3.BigNumber(tokensPerLockup)).mul(c.exponent).sub(unlockedTokensPerInterval.mul(6));
+        assert(values[i].eq(initialDelivery), 'tokens not delivered');
       }
     });
   });
