@@ -54,9 +54,9 @@ contract BRDLockup is Ownable {
   // update the allocation storage remaining balances
   function processInterval() onlyOwner returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
-    bool correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
-    bool validInterval = currentInterval < numIntervals;
-    if (!correctInterval || !validInterval) return false;
+    bool _correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
+    bool _validInterval = currentInterval < numIntervals;
+    if (!_correctInterval || !_validInterval) return false;
 
     // advance the current interval
     currentInterval = currentInterval.add(1);
