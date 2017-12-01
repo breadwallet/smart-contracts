@@ -185,6 +185,8 @@ contract BRDLockup is Ownable {
   // the number of total reward intervals, zero indexed
   uint256 public numIntervals;
 
+  event Lock(address indexed _to, uint256 _amount);
+
   event Unlock(address indexed _to, uint256 _amount);
 
   // constructor
@@ -199,9 +201,9 @@ contract BRDLockup is Ownable {
   // update the allocation storage remaining balances
   function processInterval() onlyOwner returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
-    bool correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
-    bool validInterval = currentInterval < numIntervals;
-    if (!correctInterval || !validInterval) return false;
+    bool _correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
+    bool _validInterval = currentInterval < numIntervals;
+    if (!_correctInterval || !_validInterval) return false;
 
     // advance the current interval
     currentInterval = currentInterval.add(1);
@@ -265,6 +267,7 @@ contract BRDLockup is Ownable {
   function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner {
     require(now < unlockDate);
     allocations.push(Allocation(_beneficiary, _numTokens, _numTokens, 0, 0));
+    Lock(_beneficiary, _numTokens);
   }
 }
 
@@ -645,8 +648,11 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // maximum per-participant wei contribution
   uint256 public maxContribution;
 
-  // number of tokens assigned to target wallet
-  uint256 public ownerShare;
+  // how many token unites the owner gets per buyer wei
+  uint256 public ownerRate;
+
+  // number of tokens per 100 to lock up in lockupTokens()
+  uint256 public bonusRate;
 
   // crowdsale authorizer contract determines who can participate
   BRDCrowdsaleAuthorizer public authorizer;
@@ -662,7 +668,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _startTime,   // crowdsale start time
     uint256 _endTime,     // crowdsale end time
     uint256 _rate,        // tokens per wei
-    uint256 _ownerShare,  // number of tokens assigned to target wallet
+    uint256 _ownerRate,   // owner tokens per buyer wei
+    uint256 _bonusRate,   // percentage of tokens to lockup
     address _wallet,      // target funds wallet
     address _authorizer,  // the first authorizer
     uint256 _numUnlockIntervals,      // number of unlock intervals
@@ -673,10 +680,10 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     cap = _cap;
     minContribution = _minWei;
     maxContribution = _maxWei;
-    ownerShare = _ownerShare;
+    ownerRate = _ownerRate;
+    bonusRate = _bonusRate;
     authorizer = new BRDCrowdsaleAuthorizer(_authorizer);
     lockup = new BRDLockup(_endTime, _numUnlockIntervals, _unlockIntervalDuration);
-    mintOwnerShareTokens();
   }
 
   // overriding Crowdsale#createTokenContract
@@ -690,19 +697,19 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // been authorized, and their contribution is within the min/max
   // thresholds
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) <= cap;
-    bool isAuthorized = authorizer.isAuthorized(msg.sender);
-    bool isMin = msg.value >= minContribution;
-    uint256 alreadyContributed = token.balanceOf(msg.sender).div(rate);
-    bool withinMax = msg.value.add(alreadyContributed) <= maxContribution;
-    return super.validPurchase() && withinCap && isAuthorized && isMin && withinMax;
+    bool _withinCap = weiRaised.add(msg.value) <= cap;
+    bool _isAuthorized = authorizer.isAuthorized(msg.sender);
+    bool _isMin = msg.value >= minContribution;
+    uint256 _alreadyContributed = token.balanceOf(msg.sender).div(rate);
+    bool _withinMax = msg.value.add(_alreadyContributed) <= maxContribution;
+    return super.validPurchase() && _withinCap && _isAuthorized && _isMin && _withinMax;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised >= cap;
-    return super.hasEnded() || capReached;
+    bool _capReached = weiRaised >= cap;
+    return super.hasEnded() || _capReached;
   }
 
   // overriding FinalizableCrowdsale#finalization
@@ -717,13 +724,39 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     super.finalization();
   }
 
-  // adds a token allocation to the lockup contract. may only be called
-  // before the end of the crowdsale. will also mint the new token
-  // allocation with the crowdsale contract as the owner
-  function lockupTokens(address _to, uint256 _amount) onlyOwner {
+  // overriding Crowdsale#buyTokens
+  // mints the ownerRate of tokens in addition to calling the super method
+  function buyTokens(address _beneficiary) public payable {
+    // call the parent method to mint tokens to the beneficiary
+    super.buyTokens(_beneficiary);
+    // calculate the owner share of tokens
+    uint256 _ownerTokens = msg.value.mul(ownerRate);
+    // mint the owner share and send to the owner wallet
+    token.mint(wallet, _ownerTokens);
+  }
+
+  // mints _amount tokens to the _beneficiary minus the bonusRate
+  // tokens to be locked up via the lockup contract. locked up tokens
+  // are sent to the contract and may be unlocked according to
+  // the lockup configuration after the sale ends
+  function lockupTokens(address _beneficiary, uint256 _amount) onlyOwner {
     require(!isFinalized);
-    lockup.pushAllocation(_to, _amount);
-    token.mint(this, _amount);
+
+    // calculate the owner share of tokens
+    uint256 _ownerTokens = ownerRate.mul(_amount).div(rate);
+    // mint the owner share and send to the owner wallet
+    token.mint(wallet, _ownerTokens);
+
+    // calculate the amount of tokens to be locked up
+    uint256 _lockupTokens = bonusRate.mul(_amount).div(100);
+    // create the locked allocation in the lockup contract
+    lockup.pushAllocation(_beneficiary, _lockupTokens);
+    // mint locked tokens to the crowdsale contract to later be unlocked
+    token.mint(this, _lockupTokens);
+
+    // the non-bonus tokens are immediately rewarded
+    uint256 _remainder = _amount.sub(_lockupTokens);
+    token.mint(_beneficiary, _remainder);
   }
 
   // unlocks tokens from the token lockup contract. no tokens are held by
@@ -748,10 +781,5 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     }
 
     return true;
-  }
-
-  // mints the tokens owned by the crowdsale wallet
-  function mintOwnerShareTokens() internal {
-    token.mint(wallet, ownerShare);
   }
 }
