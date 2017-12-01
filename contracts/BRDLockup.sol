@@ -40,6 +40,8 @@ contract BRDLockup is Ownable {
   // the number of total reward intervals, zero indexed
   uint256 public numIntervals;
 
+  event Lock(address indexed _to, uint256 _amount);
+
   event Unlock(address indexed _to, uint256 _amount);
 
   // constructor
@@ -120,5 +122,6 @@ contract BRDLockup is Ownable {
   function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner {
     require(now < unlockDate);
     allocations.push(Allocation(_beneficiary, _numTokens, _numTokens, 0, 0));
+    Lock(_beneficiary, _numTokens);
   }
 }
