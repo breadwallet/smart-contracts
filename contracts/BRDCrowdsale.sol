@@ -8,6 +8,7 @@ import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
 import "zeppelin-solidity/contracts/token/MintableToken.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
+
 contract BRDCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
 
@@ -47,7 +48,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _numUnlockIntervals,      // number of unlock intervals
     uint256 _unlockIntervalDuration)  // amount of time between intervals
     Crowdsale(_startTime, _endTime, _rate, _wallet)
-   public {
+   public
+  {
     require(_cap > 0);
     cap = _cap;
     minContribution = _minWei;
@@ -58,42 +60,11 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     lockup = new BRDLockup(_endTime, _numUnlockIntervals, _unlockIntervalDuration);
   }
 
-  // overriding Crowdsale#createTokenContract
-  function createTokenContract() internal returns (MintableToken) {
-    return new BRDToken();
-  }
-
-  // overriding Crowdsale#validPurchase to add extra cap logic
-  // @return true if crowdsale participants can buy at the moment
-  // checks whether the cap has not been reached, the purchaser has
-  // been authorized, and their contribution is within the min/max
-  // thresholds
-  function validPurchase() internal constant returns (bool) {
-    bool _withinCap = weiRaised.add(msg.value) <= cap;
-    bool _isAuthorized = authorizer.isAuthorized(msg.sender);
-    bool _isMin = msg.value >= minContribution;
-    uint256 _alreadyContributed = token.balanceOf(msg.sender).div(rate);
-    bool _withinMax = msg.value.add(_alreadyContributed) <= maxContribution;
-    return super.validPurchase() && _withinCap && _isAuthorized && _isMin && _withinMax;
-  }
-
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
     bool _capReached = weiRaised >= cap;
     return super.hasEnded() || _capReached;
-  }
-
-  // overriding FinalizableCrowdsale#finalization
-  // finalizes minting for the token contract, disabling further minting
-  function finalization() internal {
-    // end minting
-    token.finishMinting();
-
-    // issue the first lockup reward
-    unlockTokens();
-
-    super.finalization();
   }
 
   // overriding Crowdsale#buyTokens
@@ -137,7 +108,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   function unlockTokens() onlyOwner public returns (bool _didIssueRewards) {
     // attempt to process the interval. it update the allocation bookkeeping
     // and will only return true when the interval should be processed
-    if (!lockup.processInterval()) return false;
+    if (!lockup.processInterval())
+      return false;
 
     // the total number of allocations
     uint _numAllocations = lockup.numAllocations();
@@ -153,5 +125,36 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     }
 
     return true;
+  }
+
+  // overriding Crowdsale#createTokenContract
+  function createTokenContract() internal returns (MintableToken) {
+    return new BRDToken();
+  }
+
+  // overriding FinalizableCrowdsale#finalization
+  // finalizes minting for the token contract, disabling further minting
+  function finalization() internal {
+    // end minting
+    token.finishMinting();
+
+    // issue the first lockup reward
+    unlockTokens();
+
+    super.finalization();
+  }
+
+  // overriding Crowdsale#validPurchase to add extra cap logic
+  // @return true if crowdsale participants can buy at the moment
+  // checks whether the cap has not been reached, the purchaser has
+  // been authorized, and their contribution is within the min/max
+  // thresholds
+  function validPurchase() internal constant returns (bool) {
+    bool _withinCap = weiRaised.add(msg.value) <= cap;
+    bool _isAuthorized = authorizer.isAuthorized(msg.sender);
+    bool _isMin = msg.value >= minContribution;
+    uint256 _alreadyContributed = token.balanceOf(msg.sender).div(rate);
+    bool _withinMax = msg.value.add(_alreadyContributed) <= maxContribution;
+    return super.validPurchase() && _withinCap && _isAuthorized && _isMin && _withinMax;
   }
 }

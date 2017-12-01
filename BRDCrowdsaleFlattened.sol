@@ -20,7 +20,7 @@ contract BRDCrowdsaleAuthorizer {
   event Authorized(address indexed _to);
 
   // constructor
-  function BRDCrowdsaleAuthorizer(address _initialAuthorzer) {
+  function BRDCrowdsaleAuthorizer(address _initialAuthorzer)  public {
     // retain the contract creator
     contractCreator = msg.sender;
     // retain the initial authorizer
@@ -29,14 +29,14 @@ contract BRDCrowdsaleAuthorizer {
 
   // add an authorizer to the authorizers mapping. the _newAuthorizer will
   // be able to add other authorizers and authorize crowdsale participants
-  function addAuthorizer(address _newAuthorizer) onlyCreatorOrAuthorizer() {
+  function addAuthorizer(address _newAuthorizer) onlyCreatorOrAuthorizer() public {
     // allow the provided address to authorize accounts
     authorizers[_newAuthorizer] = true;
   }
 
   // remove an authorizer from the authorizers mapping. the _bannedAuthorizer will
   // no longer have permission to do anything on this contract
-  function removeAuthorizer(address _bannedAuthorizer) onlyCreatorOrAuthorizer() {
+  function removeAuthorizer(address _bannedAuthorizer) onlyCreatorOrAuthorizer() public {
     // only attempt to remove the authorizer if they are currently authorized
     require(authorizers[_bannedAuthorizer]);
     // remove the authorizer
@@ -44,7 +44,7 @@ contract BRDCrowdsaleAuthorizer {
   }
 
   // allow an account to participate in the crowdsale
-  function authorizeAccount(address _newAccount) onlyCreatorOrAuthorizer() {
+  function authorizeAccount(address _newAccount) onlyCreatorOrAuthorizer() public {
     if (!authorizedAccounts[_newAccount]) {
       // allow the provided account to participate in the crowdsale
       authorizedAccounts[_newAccount] = true;
@@ -54,12 +54,12 @@ contract BRDCrowdsaleAuthorizer {
   }
 
   // returns whether or not the provided _account is an authorizer
-  function isAuthorizer(address _account) constant returns (bool _isAuthorizer) {
+  function isAuthorizer(address _account) constant public returns (bool _isAuthorizer) {
     return authorizers[_account] == true;
   }
 
   // returns whether or not the provided _account is authorized to participate in the crowdsale
-  function isAuthorized(address _account) constant returns (bool _authorized) {
+  function isAuthorized(address _account) constant public returns (bool _authorized) {
     return authorizedAccounts[_account] == true;
   }
 
@@ -191,7 +191,7 @@ contract BRDLockup is Ownable {
 
   // constructor
   // @param _crowdsaleEndDate - the date the crowdsale ends
-  function BRDLockup(uint256 _crowdsaleEndDate, uint256 _numIntervals, uint256 _intervalDuration) {
+  function BRDLockup(uint256 _crowdsaleEndDate, uint256 _numIntervals, uint256 _intervalDuration)  public {
     unlockDate = _crowdsaleEndDate;
     numIntervals = _numIntervals;
     intervalDuration = _intervalDuration;
@@ -199,11 +199,12 @@ contract BRDLockup is Ownable {
   }
 
   // update the allocation storage remaining balances
-  function processInterval() onlyOwner returns (bool _shouldProcessRewards) {
+  function processInterval() onlyOwner public returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
     bool _correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
     bool _validInterval = currentInterval < numIntervals;
-    if (!_correctInterval || !_validInterval) return false;
+    if (!_correctInterval || !_validInterval)
+      return false;
 
     // advance the current interval
     currentInterval = currentInterval.add(1);
@@ -219,9 +220,8 @@ contract BRDLockup is Ownable {
       // if we are at the last interval, the reward amount is the entire remaining balance
       if (currentInterval == numIntervals) {
         _amountToReward = allocations[_i].remainingBalance;
-      }
-      // otherwise the reward amount is the total allocation divided by the number of intervals
-      else {
+      } else {
+        // otherwise the reward amount is the total allocation divided by the number of intervals
         _amountToReward = allocations[_i].allocation.div(numIntervals);
       }
       // update the allocation storage
@@ -242,7 +242,7 @@ contract BRDLockup is Ownable {
   }
 
   // reward the beneficiary at `_index`
-  function unlock(uint _index) onlyOwner returns (bool _shouldReward, address _beneficiary, uint256 _rewardAmount) {
+  function unlock(uint _index) onlyOwner public returns (bool _shouldReward, address _beneficiary, uint256 _rewardAmount) {
     // ensure the beneficiary is not rewarded twice during the same interval
     if (allocations[_index].currentInterval < currentInterval) {
       // record the currentInterval so the above check is useful
@@ -264,9 +264,17 @@ contract BRDLockup is Ownable {
   }
 
   // add a new allocation to the lockup
-  function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner {
+  function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner public {
     require(now < unlockDate);
-    allocations.push(Allocation(_beneficiary, _numTokens, _numTokens, 0, 0));
+    allocations.push(
+      Allocation(
+        _beneficiary,
+        _numTokens,
+        _numTokens,
+        0,
+        0
+      )
+    );
     Lock(_beneficiary, _numTokens);
   }
 }
@@ -675,6 +683,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _numUnlockIntervals,      // number of unlock intervals
     uint256 _unlockIntervalDuration)  // amount of time between intervals
     Crowdsale(_startTime, _endTime, _rate, _wallet)
+   public
   {
     require(_cap > 0);
     cap = _cap;
@@ -686,42 +695,11 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     lockup = new BRDLockup(_endTime, _numUnlockIntervals, _unlockIntervalDuration);
   }
 
-  // overriding Crowdsale#createTokenContract
-  function createTokenContract() internal returns (MintableToken) {
-    return new BRDToken();
-  }
-
-  // overriding Crowdsale#validPurchase to add extra cap logic
-  // @return true if crowdsale participants can buy at the moment
-  // checks whether the cap has not been reached, the purchaser has
-  // been authorized, and their contribution is within the min/max
-  // thresholds
-  function validPurchase() internal constant returns (bool) {
-    bool _withinCap = weiRaised.add(msg.value) <= cap;
-    bool _isAuthorized = authorizer.isAuthorized(msg.sender);
-    bool _isMin = msg.value >= minContribution;
-    uint256 _alreadyContributed = token.balanceOf(msg.sender).div(rate);
-    bool _withinMax = msg.value.add(_alreadyContributed) <= maxContribution;
-    return super.validPurchase() && _withinCap && _isAuthorized && _isMin && _withinMax;
-  }
-
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
     bool _capReached = weiRaised >= cap;
     return super.hasEnded() || _capReached;
-  }
-
-  // overriding FinalizableCrowdsale#finalization
-  // finalizes minting for the token contract, disabling further minting
-  function finalization() internal {
-    // end minting
-    token.finishMinting();
-
-    // issue the first lockup reward
-    unlockTokens();
-
-    super.finalization();
   }
 
   // overriding Crowdsale#buyTokens
@@ -739,7 +717,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // tokens to be locked up via the lockup contract. locked up tokens
   // are sent to the contract and may be unlocked according to
   // the lockup configuration after the sale ends
-  function lockupTokens(address _beneficiary, uint256 _amount) onlyOwner {
+  function lockupTokens(address _beneficiary, uint256 _amount) onlyOwner  public {
     require(!isFinalized);
 
     // calculate the owner share of tokens
@@ -765,7 +743,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   function unlockTokens() onlyOwner public returns (bool _didIssueRewards) {
     // attempt to process the interval. it update the allocation bookkeeping
     // and will only return true when the interval should be processed
-    if (!lockup.processInterval()) return false;
+    if (!lockup.processInterval())
+      return false;
 
     // the total number of allocations
     uint _numAllocations = lockup.numAllocations();
@@ -781,5 +760,36 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     }
 
     return true;
+  }
+
+  // overriding Crowdsale#createTokenContract
+  function createTokenContract() internal returns (MintableToken) {
+    return new BRDToken();
+  }
+
+  // overriding FinalizableCrowdsale#finalization
+  // finalizes minting for the token contract, disabling further minting
+  function finalization() internal {
+    // end minting
+    token.finishMinting();
+
+    // issue the first lockup reward
+    unlockTokens();
+
+    super.finalization();
+  }
+
+  // overriding Crowdsale#validPurchase to add extra cap logic
+  // @return true if crowdsale participants can buy at the moment
+  // checks whether the cap has not been reached, the purchaser has
+  // been authorized, and their contribution is within the min/max
+  // thresholds
+  function validPurchase() internal constant returns (bool) {
+    bool _withinCap = weiRaised.add(msg.value) <= cap;
+    bool _isAuthorized = authorizer.isAuthorized(msg.sender);
+    bool _isMin = msg.value >= minContribution;
+    uint256 _alreadyContributed = token.balanceOf(msg.sender).div(rate);
+    bool _withinMax = msg.value.add(_alreadyContributed) <= maxContribution;
+    return super.validPurchase() && _withinCap && _isAuthorized && _isMin && _withinMax;
   }
 }

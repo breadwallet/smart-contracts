@@ -3,6 +3,7 @@ pragma solidity ^0.4.15;
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
+
 /**
  * Contract BRDLockup keeps track of a vesting schedule for pre-sold tokens.
  * Pre-sold tokens are rewarded up to `numIntervals` times separated by an
@@ -58,7 +59,8 @@ contract BRDLockup is Ownable {
     // ensure the time interval is correct
     bool _correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
     bool _validInterval = currentInterval < numIntervals;
-    if (!_correctInterval || !_validInterval) return false;
+    if (!_correctInterval || !_validInterval)
+      return false;
 
     // advance the current interval
     currentInterval = currentInterval.add(1);
@@ -74,9 +76,8 @@ contract BRDLockup is Ownable {
       // if we are at the last interval, the reward amount is the entire remaining balance
       if (currentInterval == numIntervals) {
         _amountToReward = allocations[_i].remainingBalance;
-      }
-      // otherwise the reward amount is the total allocation divided by the number of intervals
-      else {
+      } else {
+        // otherwise the reward amount is the total allocation divided by the number of intervals
         _amountToReward = allocations[_i].allocation.div(numIntervals);
       }
       // update the allocation storage
@@ -119,9 +120,17 @@ contract BRDLockup is Ownable {
   }
 
   // add a new allocation to the lockup
-  function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner  public {
+  function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner public {
     require(now < unlockDate);
-    allocations.push(Allocation(_beneficiary, _numTokens, _numTokens, 0, 0));
+    allocations.push(
+      Allocation(
+        _beneficiary,
+        _numTokens,
+        _numTokens,
+        0,
+        0
+      )
+    );
     Lock(_beneficiary, _numTokens);
   }
 }
