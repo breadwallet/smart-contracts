@@ -18,7 +18,7 @@ contract('BRDCrowdsale', function(accounts) {
     }
     return BRDCrowdsale.new(
       c.cap, c.minContribution, c.maxContribution,
-      c.startTime, c.endTime, c.rate, c.ownerShare,
+      c.startTime, c.endTime, c.rate, c.ownerRate,
       c.wallet, c.authorizer,
       c.numIntervals, c.intervalDuration,
       {from: accounts[0]}
@@ -125,17 +125,6 @@ contract('BRDCrowdsale', function(accounts) {
     });
   }
 
-  it('should award the owner share upon contract creation', function() {
-    return newContract().then(function(instance) {
-      return instance.token.call().then(function(tokenAddr) {
-        let token = BRDToken.at(tokenAddr);
-        return token.balanceOf.call(accounts[0]);
-      });
-    }).then(function(balance) {
-      assert(balance.eq(c.ownerShare));
-    });
-  });
-
   it('should allocate the lockup tokens upon contract creation', function() {
     return newContract().then(function(instance) {
       let promises = [];
@@ -204,6 +193,46 @@ contract('BRDCrowdsale', function(accounts) {
       return instance.sendTransaction({from: accounts[1], value: amountToSend});
     }).then(function() {
       assert(true);
+    }).catch(function(err) {
+      console.log(err);
+      assert(false, 'no error expected');
+    });
+  });
+
+  it('should mint user tokens on a valid contribution', function() {
+    var crowdsale;
+    let amountToSend = (new web3.BigNumber(1)).mul(c.exponent);
+    var amountExpected = (new web3.BigNumber(900)).mul(c.exponent);
+    return awaitStartTime(secondAccountAuthorized()).then(function(instance) {
+      crowdsale = instance;
+      return instance.sendTransaction({from: accounts[1], value: amountToSend});
+    }).then(function() {
+      return crowdsale.token.call();
+    }).then(function(tokenAddr) {
+      var tokenContract = BRDToken.at(tokenAddr);
+      return tokenContract.balanceOf(accounts[1]);
+    }).then(function(ownerBalance) {
+      assert(ownerBalance.eq(amountExpected), 'user balance should equal 900 tokens');
+    }).catch(function(err) {
+      console.log(err);
+      assert(false, 'no error expected');
+    });
+  });
+
+  it('should mint owner tokens on a valid contribution', function() {
+    var crowdsale;
+    let amountToSend = (new web3.BigNumber(1)).mul(c.exponent);
+    var amountExpected = (new web3.BigNumber(300)).mul(c.exponent);
+    return awaitStartTime(secondAccountAuthorized()).then(function(instance) {
+      crowdsale = instance;
+      return instance.sendTransaction({from: accounts[1], value: amountToSend});
+    }).then(function() {
+      return crowdsale.token.call();
+    }).then(function(tokenAddr) {
+      var tokenContract = BRDToken.at(tokenAddr);
+      return tokenContract.balanceOf(accounts[0]);
+    }).then(function(ownerBalance) {
+      assert(ownerBalance.eq(amountExpected), 'owner balance should equal 300 tokens');
     }).catch(function(err) {
       console.log(err);
       assert(false, 'no error expected');
