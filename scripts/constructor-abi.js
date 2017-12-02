@@ -34,8 +34,18 @@ module.exports = function(callback) {
     return arg;
   });
 
-  console.log('args');
+  var argsHuman = constants.creationArguments.map(function(arg) {
+    if (typeof arg == 'object' || typeof arg == 'number') {
+      var bn = new web3.BigNumber(arg);
+      return bn.toString();
+    }
+    return arg;
+  });
+
+  console.log('args:');
   console.log(args);
+  console.log('args-human:');
+  console.log(argsHuman);
 
   console.log(abi.rawEncode(signature, args).toString('hex'));
   callback();
