@@ -11,9 +11,6 @@ var signature = [
   'uint256', //_ownerRate
   'uint256', //_bonusRate
   'address', //_wallet
-  'address', //_authorizer
-  'uint256', //_numUnlockIntervals
-  'uint256'  //_unlockIntervalDuration
 ];
 
 module.exports = function(callback) {
