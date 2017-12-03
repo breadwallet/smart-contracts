@@ -43,10 +43,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _rate,        // tokens per wei
     uint256 _ownerRate,   // owner tokens per buyer wei
     uint256 _bonusRate,   // percentage of tokens to lockup
-    address _wallet,      // target funds wallet
-    address _authorizer,  // the first authorizer
-    uint256 _numUnlockIntervals,      // number of unlock intervals
-    uint256 _unlockIntervalDuration)  // amount of time between intervals
+    address _wallet)      // target funds wallet
     Crowdsale(_startTime, _endTime, _rate, _wallet)
    public
   {
@@ -56,8 +53,6 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     maxContribution = _maxWei;
     ownerRate = _ownerRate;
     bonusRate = _bonusRate;
-    authorizer = new BRDCrowdsaleAuthorizer(_authorizer);
-    lockup = new BRDLockup(_endTime, _numUnlockIntervals, _unlockIntervalDuration);
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
@@ -65,6 +60,11 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   function hasEnded() public constant returns (bool) {
     bool _capReached = weiRaised >= cap;
     return super.hasEnded() || _capReached;
+  }
+
+  // @return true if the crowdsale has started
+  function hasStarted() public constant returns (bool) {
+    return now > startTime;
   }
 
   // overriding Crowdsale#buyTokens
@@ -127,9 +127,29 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     return true;
   }
 
+  // sets the authorizer contract if the crowdsale hasn't started
+  function setAuthorizer(BRDCrowdsaleAuthorizer _authorizer) onlyOwner public {
+    require(!hasStarted());
+    authorizer = _authorizer;
+  }
+
+  // sets the lockup contract if the crowdsale hasn't started
+  function setLockup(BRDLockup _lockup) onlyOwner public {
+    require(!hasStarted());
+    lockup = _lockup;
+  }
+
+  // sets the token contract if the crowdsale hasn't started
+  function setToken(BRDToken _token) onlyOwner public {
+    require(!hasStarted());
+    token = _token;
+  }
+
   // overriding Crowdsale#createTokenContract
   function createTokenContract() internal returns (MintableToken) {
-    return new BRDToken();
+    // set the token to null initially
+    // call setToken() above to set the actual token address
+    return BRDToken(address(0));
   }
 
   // overriding FinalizableCrowdsale#finalization
