@@ -17,16 +17,49 @@ contract('BRDCrowdsale', function(accounts) {
         c[k] = overrides[k];
       });
     }
-    return BRDCrowdsale.new(
-      c.cap, c.minContribution, c.maxContribution,
-      c.startTime, c.endTime,
-      c.rate, c.ownerRate, c.bonusRate,
-      c.wallet, c.authorizer,
-      c.numIntervals, c.intervalDuration,
-      {from: accounts[0]}
-    ).catch(function(err) {
-      console.log('error creating contract', err);
-      assert(false, 'error creating contract');
+    // advance start/end times because it takes longer to do all this stuff below
+    var token;
+    var authorizer;
+    var lockup;
+    var crowdsale;
+    var errOut = function(promise, errMsg) {
+      return promise.catch(function() {
+        console.log(errMsg, arguments);
+        assert(false, 'errored out');
+      });
+    };
+    return Promise.all([
+      errOut(BRDToken.new(), 'error creating token'), 
+      errOut(BRDCrowdsaleAuthorizer.new(), 'error creating authorizer'), 
+      errOut(BRDLockup.new(c.endTime, c.numIntervals, c.intervalDuration), 'error creating lockup')
+    ]).then(function(contracts) {
+      token = contracts[0];
+      authorizer = contracts[1];
+      lockup = contracts[2];
+    }).then(function() {
+      return errOut(BRDCrowdsale.new(
+        c.cap, c.minContribution, c.maxContribution,
+        c.startTime, c.endTime,
+        c.rate, c.ownerRate, c.bonusRate,
+        c.wallet,
+        {from: accounts[0]}
+      ), 'error creating crowsale');
+    }).then(function(contract) {
+      crowdsale = contract;
+      return Promise.all([
+        errOut(authorizer.addAuthorizer(accounts[0]), 'error adding accounts[0] as authorizer'),
+        errOut(token.transferOwnership(crowdsale.address), 'error transferring token ownership'),
+        errOut(authorizer.transferOwnership(crowdsale.address), 'error transferring authorizer ownership'),
+        errOut(lockup.transferOwnership(crowdsale.address), 'error transferring lockup ownership'),
+      ]);
+    }).then(function() {
+      return Promise.all([
+        errOut(crowdsale.setToken(token.address), 'error setting token'),
+        errOut(crowdsale.setAuthorizer(authorizer.address), 'error setting authorizer'),
+        errOut(crowdsale.setLockup(lockup.address), 'error setting lockup')
+      ]);
+    }).then(function() {
+      return crowdsale;
     });
   }
 
