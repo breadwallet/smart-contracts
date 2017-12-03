@@ -14,13 +14,18 @@ module.exports = {
       host: "localhost",
       port: 8545,
       network_id: 42,
-      gas: 4704580,
     },
     ropsten: {
       host: "localhost",
       port: 8545,
       network_id: 3,
-      gas: 4700036,
+      gas: 4700000,
+    }
+  },
+  solc: {
+    optimization: {
+      enabled: true,
+      runs: 200
     }
   }
 };

@@ -28,11 +28,11 @@ module.exports = function(web3, accounts, network) {
   }
 
   if (network == 'kovan' || network == 'ropsten') {
-    c.startTime = 1512169200; // dec 1 23:00:00 GMT
-    c.endTime = c.startTime + (86400*6); // 1 days
+    c.startTime = 1512334800; // dec 3 21:00:00 GMT
+    c.endTime = c.startTime + 86400; // 1 days
     c.minContribution = (new web3.BigNumber(.001)).mul(c.exponent); // .001 eth
-    c.maxContribution = (new web3.BigNumber(1).mul(c.exponent)); // 1 eth
-    c.rate = new web3.BigNumber(90000);  // tokens per eth
+    c.maxContribution = (new web3.BigNumber(10).mul(c.exponent)); // 10 eth
+    c.rate = new web3.BigNumber(90000); // tokens per eth
     c.ownerRate = new web3.BigNumber(30000); // tokens per buyer eth
     c.cap = (new web3.BigNumber(50)).mul(c.exponent);
     c.intervalDuration = 6*3600; // 6 hrs
