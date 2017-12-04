@@ -1,8 +1,0 @@
-{
-  "contract_name": "BRDSafe",
-  "abi": [],
-  "unlinked_binary": "0x60606040523415600e57600080fd5b5b603680601c6000396000f30060606040525b600080fd00a165627a7a72305820442422483f80bc328693d9e849b1ad2dd6ca0ab4918911c7fc89f66b46ccd4450029",
-  "networks": {},
-  "schema_version": "0.0.5",
-  "updated_at": 1511387453490
-}
