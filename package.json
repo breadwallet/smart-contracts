@@ -1,0 +1,29 @@
+{
+  "name": "smart-contracts",
+  "version": "1.0.0",
+  "description": "This is the repository for the Bread Token (BRD) Crowdsale and ERC20 smart contracts.",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "bignumber.js": "^5.0.0",
+    "ethereumjs-abi": "^0.6.4",
+    "web3": "^1.0.0-beta.26",
+    "zeppelin-solidity": "^1.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "truffle test",
+    "constructor-abi": "node scripts/constructor-abi.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/breadwallet/smart-contracts.git"
+  },
+  "author": "Samuel Sutch",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/breadwallet/smart-contracts/issues"
+  },
+  "homepage": "https://github.com/breadwallet/smart-contracts#readme"
+}
