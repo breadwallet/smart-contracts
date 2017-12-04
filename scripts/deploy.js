@@ -1,7 +1,6 @@
 var Web3 = require('web3');
 var constants = require('../constants');
 var BigNumber = require('bignumber.js');
-// var abi = require('ethereumjs-abi');
 var abi = require('web3-eth-abi');
 
 var BRDCrowdsaleTruffle = artifacts.require("BRDCrowdsale");
@@ -77,7 +76,6 @@ function doDeploy() {
         var BRDCrowdsaleAuthorizer = new web3.eth.Contract(new Array(authorizerJson.abi));
         var BRDLockup = new web3.eth.Contract(new Array(lockupJson.abi));
         var BRDCrowdsale = new web3.eth.Contract(new Array(crowdsaleJson.abi));
-        // console.log(BRDCrowdsale);
     
         var lockupArgs = encodeConstructorArgs(
             ['uint256', 'uint256', 'uint256'],
