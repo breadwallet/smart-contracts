@@ -1,16 +1,18 @@
-all: build/flattened/BRDCrowdsaleAuthorizer.sol build/flattened/BRDLockup.sol build/flattened/BRDToken.sol build/flattened/BRDCrowdsale.sol
+.DEFAULT_GOAL := all
+.PRECIOUS: build/flattened/%.sol
 
-build/flattened/BRDCrowdsaleAuthorizer.sol: contracts/BRDCrowdsaleAuthorizer.sol
-	truffle-flattener contracts/BRDCrowdsaleAuthorizer.sol > build/flattened/BRDCrowdsaleAuthorizer.sol
+CONTRACTS=BRDCrowdsaleAuthorizer BRDLockup BRDToken BRDCrowdsale
+JSONS=build/%.json
+SOLCOPTS=--combined-json abi,asm,ast,bin,bin-runtime,clone-bin,compact-format,devdoc,hashes,interface,metadata,opcodes,srcmap,srcmap-runtime,userdoc --pretty-json
 
-build/flattened/BRDLockup.sol: contracts/BRDLockup.sol
-	truffle-flattener contracts/BRDLockup.sol > build/flattened/BRDLockup.sol
+build/flattened/%.sol:
+	truffle-flattener contracts/$*.sol > $@
 
-build/flattened/BRDToken.sol: contracts/BRDToken.sol 
-	truffle-flattener contracts/BRDToken.sol > build/flattened/BRDToken.sol 
-
-build/flattened/BRDCrowdsale.sol: contracts/BRDCrowdsale.sol 
-	truffle-flattener contracts/BRDCrowdsale.sol > build/flattened/BRDCrowdsale.sol
+build/%.json: build/flattened/%.sol
+	solc $(SOLCOPTS) $^ > $@
 
 clean:
-	rm build/flattened/*.sol
+	-rm build/*.json 
+	-rm build/flattened/*.sol
+
+all: $(patsubst %,$(JSONS), $(CONTRACTS))
