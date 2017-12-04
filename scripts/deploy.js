@@ -49,14 +49,14 @@ function deploy(contract, name, opts) {
 }
 
 function transferOwnership(contract, toContract) {
-    var txn = contract.transferOwnership(toContract.address, {from: accounts[0]});
+    var txn = contract.transferOwnership(toContract.address, {from: accounts[0], gas: 4700000});
     return txn;
 }
 
 function setThing(contract, thing, address) {
     var methodName = 'set' + thing.charAt(0).toUpperCase() + thing.slice(1);
     console.log('set thing', thing, address);
-    var txn = contract[methodName](address, {from: accounts[0]});
+    var txn = contract[methodName](address, {from: accounts[0], gas: 4700000});
     return txn;
 }
 
@@ -115,7 +115,7 @@ function doDeploy() {
         ];
         
         return Promise.all(deployPromises).then(function() {
-            BRDCrowdsaleAuthorizer.addAuthorizer(accounts[0], {from: accounts[0]}).then(function() {
+            BRDCrowdsaleAuthorizer.addAuthorizer(accounts[0], {from: accounts[0], gas: 4700000}).then(function() {
                 console.log('added initial authorizer', accounts[0]);
                 var updatePromises = [
                     transferOwnership(BRDCrowdsaleAuthorizer, BRDCrowdsale, 'authorizer'),
