@@ -28,7 +28,7 @@ module.exports = function(web3, accounts, network) {
   }
 
   if (network == 'kovan' || network == 'ropsten') {
-    c.startTime = 1512334800; // dec 3 21:00:00 GMT
+    c.startTime = 1512439285; // dec 4 05:00:00 GMT
     c.endTime = c.startTime + 86400; // 1 days
     c.minContribution = (new web3.BigNumber(.001)).mul(c.exponent); // .001 eth
     c.maxContribution = (new web3.BigNumber(10).mul(c.exponent)); // 10 eth
@@ -42,8 +42,11 @@ module.exports = function(web3, accounts, network) {
     c.cap, c.minContribution, c.maxContribution,
     c.startTime, c.endTime,
     c.rate, c.ownerRate, c.bonusRate,
-    c.wallet, c.authorizer,
-    c.numIntervals, c.intervalDuration
+    c.wallet
+  ];
+
+  c.lockupArguments = [
+    c.endTime, c.intervalDuration, c.numIntervals
   ];
 
   return c
