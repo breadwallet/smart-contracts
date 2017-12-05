@@ -52,11 +52,7 @@ module.exports = function(deployer, network, accounts) {
           
           crowdsale.setToken(BRDToken.address).then(function() {
             crowdsale.setLockup(BRDLockup.address).then(function() {
-              // XXX: temporary, put actual presale allocations here
-              for (let i = 0; i < accounts.length; i++) {
-                crowdsale.lockupTokens(accounts[i], (new web3.BigNumber(6).mul(c.exponent)))
-                  .catch(errOut('MIGRATE: error locking up token'));
-              }
+              
             }).catch(errOut('MIGRATE: error setting lockup'));
           }).catch(errOut('MIGRATE: error setting token'));
         });

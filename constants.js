@@ -20,7 +20,7 @@ module.exports = function(web3, accounts, network) {
   c.intervalDuration = (86400*30); // 30 days
 
   if (network == 'development') {
-    c.startTime = Math.floor(Date.now() / 1000) + 1; // now + N
+    c.startTime = Math.floor(Date.now() / 1000) + 2; // now + N
     c.endTime = c.startTime + 30; // + 30 seconds
     c.cap = (new web3.BigNumber(100)).mul(c.exponent); // 100 ETH
     c.maxContribution = c.minContribution.mul(5); // 5 ETH

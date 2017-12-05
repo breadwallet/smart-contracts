@@ -6,7 +6,7 @@ var constants = require('../constants.js');
 
 contract('BRDCrowdsale', function(accounts) {
   let c = constants(web3, accounts, 'development'); // note: do not use for startTime or endTime
-  let tokensPerLockup = 6;
+  let tokensPerLockup = 1125;
   let expectedLockupShare = (new web3.BigNumber(accounts.length*tokensPerLockup)).mul(c.exponent);
   expectedLockupShare = c.bonusRate.mul(expectedLockupShare).div(100);
 
@@ -161,7 +161,7 @@ contract('BRDCrowdsale', function(accounts) {
   }
 
   it('should allocate the lockup tokens upon contract creation', function() {
-    return newContract().then(function(instance) {
+    return awaitStartTime(newContract()).then(function(instance) {
       let promises = [];
       for (let i = 0; i < accounts.length; i++) {
         let amountToLockup = (new web3.BigNumber(tokensPerLockup).mul(c.exponent));
@@ -343,7 +343,7 @@ contract('BRDCrowdsale', function(accounts) {
   });
 
   it('should not allow contributions once the end time has been reached', function() {
-    let newContractPromise = newContract({endTime: Math.floor(Date.now()/1000)+2});
+    let newContractPromise = newContract({endTime: Math.floor(Date.now()/1000)+4});
     let amountToSend = (new web3.BigNumber(4).mul(c.exponent)); // 4 eth
     return awaitEndTime(awaitStartTime(secondAccountAuthorized(newContractPromise))).then(function(instance) {
       return instance.sendTransaction({from: accounts[1], value: amountToSend});
@@ -371,7 +371,7 @@ contract('BRDCrowdsale', function(accounts) {
 
   it('should unlock first batch of tokens upon finalization', function() {
     let crowdsale;
-    let contractPromise = newContract({endTime: Math.floor(Date.now()/1000)+2});
+    let contractPromise = newContract({endTime: Math.floor(Date.now()/1000)+4});
     return awaitEndTime(presaleParticipants(contractPromise)).then(function(instance) {
       crowdsale = instance;
       return crowdsale.finalize({from: accounts[0]});
@@ -398,7 +398,7 @@ contract('BRDCrowdsale', function(accounts) {
 
   it('should immediately mint non-bonus tokens to the beneficiary', function() {
     let crowdsale;
-    let contractPromise = newContract({endTime: Math.floor(Date.now()/1000)+2});
+    let contractPromise = newContract({endTime: Math.floor(Date.now()/1000)+4});
     return presaleParticipants(contractPromise).then(function(instance) {
       crowdsale = instance;
       return crowdsale.token.call();
@@ -423,7 +423,7 @@ contract('BRDCrowdsale', function(accounts) {
   it('should not allow another unlock immediately after the first unlock', function() {
     let crowdsale;
     let lockup;
-    let contractPromise = newContract({endTime: Math.floor(Date.now()/1000)+2});
+    let contractPromise = newContract({endTime: Math.floor(Date.now()/1000)+4});
     return awaitEndTime(presaleParticipants(contractPromise)).then(function(instance) {
       crowdsale = instance;
       return crowdsale.finalize({from: accounts[0]});
@@ -447,10 +447,10 @@ contract('BRDCrowdsale', function(accounts) {
     let crowdsale;
     let lockup;
     let contractPromise = newContract({
-      endTime: Math.floor(Date.now()/1000)+2,
+      endTime: Math.floor(Date.now()/1000)+5,
       intervalDuration: 2, // 2 seconds
     });
-    return awaitEndTime(presaleParticipants(contractPromise)).then(function(instance) {
+    return awaitEndTime(presaleParticipants(awaitStartTime(contractPromise))).then(function(instance) {
       crowdsale = instance;
       return crowdsale.finalize({from: accounts[0]});
     }).then(function() {
@@ -469,6 +469,7 @@ contract('BRDCrowdsale', function(accounts) {
       return Promise.all(promises);
     }).then(function(values) {
       for (let i = 1; i < accounts.length; i++) { // start at 1 to ignore the owner share
+        // console.log(values[i].div(c.exponent).toString(), ':', tokensPerLockup);
         assert(values[i].eq((new web3.BigNumber(tokensPerLockup)).mul(c.exponent)), 'tokens not delivered'); // all tokens
       }
     });
@@ -479,7 +480,7 @@ contract('BRDCrowdsale', function(accounts) {
     let lockup;
     let lockupInfo;
     let contractPromise = newContract({
-      endTime: Math.floor(Date.now()/1000)+2,
+      endTime: Math.floor(Date.now()/1000)+5,
       intervalDuration: 2, // 2 seconds
     });
     return awaitEndTime(presaleParticipants(contractPromise)).then(function(instance) {
@@ -503,4 +504,5 @@ contract('BRDCrowdsale', function(accounts) {
   });
 
   // TODO: test sending/receiving post finalization
+  // TODO: test allocating 50 lockups and unlocking all tokens
 });
