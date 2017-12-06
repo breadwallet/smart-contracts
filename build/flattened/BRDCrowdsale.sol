@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 // File: zeppelin-solidity/contracts/ownership/Ownable.sol
 
@@ -768,6 +768,10 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   function setToken(BRDToken _token) onlyOwner public {
     require(!hasStarted());
     token = _token;
+  }
+
+  function setMaxContribution(uint256 _newMaxContribution) onlyOwner public {
+    maxContribution = _newMaxContribution;
   }
 
   // overriding Crowdsale#createTokenContract
