@@ -28,7 +28,7 @@ module.exports = function(web3, accounts, network) {
   }
 
   if (network == 'kovan' || network == 'ropsten') {
-    c.startTime = 1512439285; // dec 4 05:00:00 GMT
+    c.startTime = 1512583200; // Tuesday, December 5, 2017 5:00:00 AM GMT
     c.endTime = c.startTime + 86400; // 1 days
     c.minContribution = (new web3.BigNumber(.001)).mul(c.exponent); // .001 eth
     c.maxContribution = (new web3.BigNumber(10).mul(c.exponent)); // 10 eth

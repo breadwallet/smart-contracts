@@ -1,13 +1,15 @@
-var BRDCrowdsaleTruffle = artifacts.require("BRDCrowdsale");
-var constants = require('../constants');
 var Web3 = require('web3');
 var BigNumber = require('bignumber.js');
+var BRDCrowdsaleTruffle = artifacts.require("BRDCrowdsale");
+var constants = require('../constants');
+var waitForConfirmation = require('./lib').waitForConfirmation;
+
 var web3 = new Web3(Web3.givenProvider || 'http://localhost:8545');
 web3.BigNumber = BigNumber;
 
 var allocations = {
     ropsten: {
-        address: '0x8B329840DCb8148F2D197DaDb96D813535731824',
+        address: '0x3ACaCa20173dAb62804898a99047485D6e536Fe4',
         users: [
             ['0x001702423633bF0Bdba9d357403940A6A2F860f5', 1125],
         ]
@@ -31,8 +33,13 @@ module.exports = function(cb) {
         var promises = [];
         for (var i = 0; i < allocation.users.length; i++) {
             var user = allocation.users[i];
-            var amount = (new BigNumber(user[1]).mul(c.exponent));
-            promises.push(crowdsale.lockupTokens(user[0], amount, {from: accounts[0], gas: 4700000}));
+            var amount = '0x' + (new BigNumber(user[1]).mul(c.exponent)).toString(16);
+            console.log('locking up', user[0], amount);
+            promises.push(
+                crowdsale.lockupTokens(user[0], amount, {from: accounts[0], gas: 4700000}).then(function(txResult) {
+                    return waitForConfirmation(web3, txResult);
+                })
+            );
         }
         Promise.all(promises).then(function(results) {
             for (var i = 0; i < results.length; i++) {

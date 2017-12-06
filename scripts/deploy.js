@@ -2,6 +2,8 @@ var Web3 = require('web3');
 var constants = require('../constants');
 var BigNumber = require('bignumber.js');
 var abi = require('web3-eth-abi');
+var request = require('request');
+var waitForConfirmation = require('./lib').waitForConfirmation;
 
 var BRDCrowdsaleTruffle = artifacts.require("BRDCrowdsale");
 var BRDCrowdsaleAuthorizerTruffle = artifacts.require("BRDCrowdsaleAuthorizer");
@@ -47,16 +49,35 @@ function deploy(contract, name, opts) {
     });
 }
 
-function transferOwnership(contract, toContract) {
+function transferOwnership(contract, toContract, toContractName) {
     var txn = contract.transferOwnership(toContract.address, {from: accounts[0], gas: 4700000});
-    return txn;
+    return txn.then(function(txnObj) {
+        console.log('transfer', toContractName, 'to crowdsale', txnObj.tx);
+        return waitForConfirmation(web3, txnObj).then(function() {
+            console.log('transfer', toContractName, 'to crowdsale confirmed');
+        });
+    });
 }
 
 function setThing(contract, thing, address) {
     var methodName = 'set' + thing.charAt(0).toUpperCase() + thing.slice(1);
-    console.log('set thing', thing, address);
     var txn = contract[methodName](address, {from: accounts[0], gas: 4700000});
-    return txn;
+    return txn.then(function(txnObj) {
+        console.log('setting', thing, 'on crowdsale', txnObj.tx);
+        return waitForConfirmation(web3, txnObj).then(function() {
+            console.log('setting', thing, 'on crowsale confirmed');
+        });
+    });
+}
+
+function addAuthorizer(contract, account) {
+    var txn = contract.addAuthorizer(account, {from: accounts[0], gas: 4700000});
+    return txn.then(function(txnObj) {
+        console.log('add authorizer', account, txnObj.tx);
+        return waitForConfirmation(web3, txnObj).then(function() {
+            console.log('add authorizer', account, 'confirmed');
+        });
+    });
 }
 
 function doDeploy() {
@@ -88,6 +109,7 @@ function doDeploy() {
             c.creationArguments
         );
         console.log('crowdsale args:', crowdsaleArgs);
+        // return new Promise(function(s) { s(); });
     
         var deployPromises = [
             deploy(BRDToken, 'token', {data: '0x' + tokenJson.bin})
@@ -111,9 +133,8 @@ function doDeploy() {
                 console.log('crowdsale address:', crowdsaleInstance.options.address);
             }),
         ];
-        
         return Promise.all(deployPromises).then(function() {
-            BRDCrowdsaleAuthorizer.addAuthorizer(accounts[0], {from: accounts[0], gas: 4700000}).then(function() {
+            addAuthorizer(BRDCrowdsaleAuthorizer, accounts[0]).then(function() {
                 console.log('added initial authorizer', accounts[0]);
                 var updatePromises = [
                     transferOwnership(BRDCrowdsaleAuthorizer, BRDCrowdsale, 'authorizer'),
@@ -138,3 +159,5 @@ function doDeploy() {
 module.exports = function(cb) {
     doDeploy().then(cb);
 }
+
+module.exports.waitForConfirmation = waitForConfirmation;
