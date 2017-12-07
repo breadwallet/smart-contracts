@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "zeppelin-solidity/contracts/token/MintableToken.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "./zeppelin-solidity-1.4/MintableToken.sol";
+import "./zeppelin-solidity-1.4/SafeMath.sol";
 
 
 contract BRDToken is MintableToken {

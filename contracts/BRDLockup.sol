@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "./zeppelin-solidity-1.4/Ownable.sol";
+import "./zeppelin-solidity-1.4/SafeMath.sol";
 
 
 /**

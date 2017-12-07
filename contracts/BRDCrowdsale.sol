@@ -3,10 +3,10 @@ pragma solidity ^0.4.18;
 import "./BRDToken.sol";
 import "./BRDCrowdsaleAuthorizer.sol";
 import "./BRDLockup.sol";
-import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
-import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
-import "zeppelin-solidity/contracts/token/MintableToken.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "./zeppelin-solidity-1.4/Crowdsale.sol";
+import "./zeppelin-solidity-1.4/FinalizableCrowdsale.sol";
+import "./zeppelin-solidity-1.4/MintableToken.sol";
+import "./zeppelin-solidity-1.4/SafeMath.sol";
 
 
 contract BRDCrowdsale is FinalizableCrowdsale {
