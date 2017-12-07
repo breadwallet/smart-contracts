@@ -9,7 +9,7 @@ web3.BigNumber = BigNumber;
 
 var allocations = {
     ropsten: {
-        address: '0x3ACaCa20173dAb62804898a99047485D6e536Fe4',
+        address: '0xdecb9B8a1c5635981A7Bd4a7505423ABC344B067',
         users: [
             ['0x001702423633bF0Bdba9d357403940A6A2F860f5', 1125],
         ]
@@ -37,7 +37,9 @@ module.exports = function(cb) {
             console.log('locking up', user[0], amount);
             promises.push(
                 crowdsale.lockupTokens(user[0], amount, {from: accounts[0], gas: 4700000}).then(function(txResult) {
-                    return waitForConfirmation(web3, txResult);
+                    return waitForConfirmation(web3, txResult).then(function() {
+                        return txResult;
+                    });
                 })
             );
         }
