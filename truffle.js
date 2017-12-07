@@ -22,10 +22,10 @@ module.exports = {
       gas: 4700000,
     }
   },
-  // solc: {
-  //   optimization: {
-  //     enabled: true,
-  //     runs: 200
-  //   }
-  // }
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    }
+  }
 };

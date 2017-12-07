@@ -11,7 +11,7 @@
     "request": "^2.83.0",
     "truffle": "^4.0.1",
     "web3": "^1.0.0-beta.26",
-    "zeppelin-solidity": "^1.3.0"
+    "zeppelin-solidity": "^1.4.0"
   },
   "devDependencies": {},
   "scripts": {
