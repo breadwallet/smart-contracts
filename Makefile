@@ -1,5 +1,4 @@
 .DEFAULT_GOAL := all
-.PRECIOUS: build/flattened/%.sol
 
 CONTRACTS=BRDCrowdsaleAuthorizer BRDLockup BRDToken BRDCrowdsale
 JSONS=build/%.json
