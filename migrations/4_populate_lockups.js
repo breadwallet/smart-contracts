@@ -9,16 +9,16 @@ var allocations = {
 };
 
 module.exports = function(deployer, network, accounts) {
-    deployer.then(function() {
-        var c = constants(web3, accounts, network);
-        var crowdsale;
-        BRDCrowdsale.deployed().then(function(crowdsaleInstance) {
-            crowdsale = crowdsaleInstance;
-            allocations[network].forEach(function(val) {
-                var account = val[0];
-                var amount = (new web3.BigNumber(val[1])).mul(c.exponent);
-                crowdsale.lockupTokens(account, amount);
-            });
-        });
-    });
+    // deployer.then(function() {
+    //     var c = constants(web3, accounts, network);
+    //     var crowdsale;
+    //     BRDCrowdsale.deployed().then(function(crowdsaleInstance) {
+    //         crowdsale = crowdsaleInstance;
+    //         allocations[network].forEach(function(val) {
+    //             var account = val[0];
+    //             var amount = (new web3.BigNumber(val[1])).mul(c.exponent);
+    //             crowdsale.lockupTokens(account, amount);
+    //         });
+    //     });
+    // });
 }
