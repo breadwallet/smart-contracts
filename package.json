@@ -8,6 +8,7 @@
   "dependencies": {
     "bignumber.js": "^5.0.0",
     "ethereumjs-abi": "^0.6.4",
+    "ethers": "^2.1.3",
     "request": "^2.83.0",
     "truffle": "^4.0.1",
     "web3": "^1.0.0-beta.26",
@@ -15,8 +16,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "truffle test",
-    "constructor-abi": "node scripts/constructor-abi.js"
+    "test": "truffle test"
   },
   "repository": {
     "type": "git",

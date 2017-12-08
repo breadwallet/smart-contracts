@@ -3,6 +3,8 @@ var BRDToken = artifacts.require('BRDToken');
 var BRDCrowdsaleAuthorizer = artifacts.require('BRDCrowdsaleAuthorizer');
 var BRDLockup = artifacts.require('BRDLockup');
 var constants = require('../constants.js');
+var ethers = require('ethers');
+
 
 contract('BRDCrowdsale', function(accounts) {
   let c = constants(web3, accounts, 'development'); // note: do not use for startTime or endTime
@@ -503,6 +505,72 @@ contract('BRDCrowdsale', function(accounts) {
     });
   });
 
+  it('should allow more contribution if the maxContribution has been increased', function() {
+    var crowdsale;
+    var token;
+    return secondAccountAuthorized(awaitStartTime(newContract())).then(function(instance) {
+      crowdsale = instance;
+      return crowdsale.sendTransaction({value: c.maxContribution, from: accounts[1]});
+    }).then(function() {
+      return crowdsale.token.call();
+    }).then(function(tokenAddr) {
+      token = BRDToken.at(tokenAddr);
+      return token.balanceOf(accounts[1]);
+    }).then(function(balance) {
+      assert(balance.eq(c.maxContribution.mul(c.rate)));
+    }).then(function() {
+      return crowdsale.setMaxContribution(c.maxContribution.mul(2));
+    }).then(function() {
+      return crowdsale.sendTransaction({value: c.maxContribution, from: accounts[1]});
+    }).then(function() {
+      return token.balanceOf(accounts[1]);
+    }).then(function(balance) {
+      assert(balance.eq(c.maxContribution.mul(2).mul(c.rate)));
+    });
+  });
+
+  it('should not puke iterating through 50 lockups', function() {
+    var lockups = [];
+    var nlockups = 50;
+    for (var i = 0; i < nlockups; i++) {
+      lockups.push([ethers.Wallet.createRandom().address, (new web3.BigNumber(tokensPerLockup)).mul(c.exponent)]);
+    }
+    var crowdsale;
+    var lockup;
+    return newContract().then(function(crowdsaleInstance) {
+      crowdsale = crowdsaleInstance;
+      var promises = []
+      for (var i = 0; i < lockups.length; i++) {
+        promises.push(crowdsale.lockupTokens(lockups[i][0], lockups[i][1], {from: accounts[0]}));
+      }
+      return Promise.all([Promise.all(promises), crowdsale.lockup.call()]);
+    }).then(function(res) {
+      lockup = BRDLockup.at(res[1]);
+      return awaitEndTime(new Promise(function(s) { s(crowdsale); }));
+    }).then(function(numAllocations) {
+      // the finalize function is most likely to fail since it performs a lockup and some other functions
+      return crowdsale.finalize({from: accounts[0], gas: 6700000});
+    }).then(function() {
+      return crowdsale.lockup.call();
+    }).then(function(lockupAddr) {
+      // process all unlocks
+      return unlockAllTokens(crowdsale, BRDLockup.at(lockupAddr));
+    }).then(function() {
+      // for good measure check all balances
+      var promises = [];
+      for (var i = 0; i < lockups.length; i++) {
+        var addr = lockups[i][0];
+        promises.push(crowdsale.token.call().then(function(ta) { 
+          return Promise.all([BRDToken.at(ta).balanceOf(addr)]);
+        }));
+      }
+      return Promise.all(promises);
+    }).then(function(balances) {
+      for (var i = 0; i < lockups.length; i++) {
+        assert((new web3.BigNumber(balances[i][0])).eq(lockups[i][1]));
+      }
+    });
+  });
+
   // TODO: test sending/receiving post finalization
-  // TODO: test allocating 50 lockups and unlocking all tokens
 });
