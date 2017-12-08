@@ -145,8 +145,14 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     token = _token;
   }
 
+  // allows maxContribution to be modified
   function setMaxContribution(uint256 _newMaxContribution) onlyOwner public {
     maxContribution = _newMaxContribution;
+  }
+
+  // allows endTime to be modified
+  function setEndTime(uint256 _newEndTime) onlyOwner public {
+    endTime = _newEndTime;
   }
 
   // overriding Crowdsale#createTokenContract
