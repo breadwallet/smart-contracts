@@ -14,6 +14,7 @@ function errOut(msg) {
 var initialAuthorizers = {
   'ropsten': ['0x001702423633bF0Bdba9d357403940A6A2F860f5', '0x0ce2ad051ce97a3d4623c62ae2edc88413f65da8'],
   'mainnet': ['0xa768cc13d1ab64283882ffa74255bb0564a7592b', '0x1e4b9fd7a1ccee6dee97c2608e92fbee6e1f04c6'],
+  'development': [],
 }
 
 module.exports = function(deployer, network, accounts) {
