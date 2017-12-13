@@ -11,6 +11,11 @@ function errOut(msg) {
   }
 }
 
+var initialAuthorizers = {
+  'ropsten': ['0x001702423633bF0Bdba9d357403940A6A2F860f5', '0x0ce2ad051ce97a3d4623c62ae2edc88413f65da8'],
+  'mainnet': ['0xa768cc13d1ab64283882ffa74255bb0564a7592b', '0x1e4b9fd7a1ccee6dee97c2608e92fbee6e1f04c6'],
+}
+
 module.exports = function(deployer, network, accounts) {
   var c = constants(web3, accounts, network);
 
@@ -35,10 +40,11 @@ module.exports = function(deployer, network, accounts) {
       c.rate, c.ownerRate, c.bonusRate,
       c.wallet,
     ).then(function() {
-      BRDCrowdsaleAuthorizer.at(BRDCrowdsaleAuthorizer.address).addAuthorizer(accounts[0])
+      var authorizer = BRDCrowdsaleAuthorizer.at(BRDCrowdsaleAuthorizer.address);
+      authorizer.addAuthorizer(accounts[0])
         .catch(errOut('MIGRATE: error setting accounts[0] as authorizer'))
         .then(function() {
-          BRDCrowdsaleAuthorizer.at(BRDCrowdsaleAuthorizer.address).transferOwnership(BRDCrowdsale.address)
+          authorizer.transferOwnership(BRDCrowdsale.address)
             .catch(errOut('MIGRATE: error transfering authorizer ownership'));
           BRDToken.at(BRDToken.address).transferOwnership(BRDCrowdsale.address)
             .catch(errOut('MIGRATE: error transfering token ownership'));
@@ -55,6 +61,12 @@ module.exports = function(deployer, network, accounts) {
               
             }).catch(errOut('MIGRATE: error setting lockup'));
           }).catch(errOut('MIGRATE: error setting token'));
+
+          var authorized = initialAuthorizers[network];
+          authorized.forEach(function(acct) {
+            authorizer.addAuthorizer(acct, {from: accounts[0]})
+              .catch(errOut('MIGRATE: error authorizing user'));
+          });
         });
     }).catch(errOut('MIGRATE: error deploying crowdsale'));
   }).catch(errOut('MIGRATE: error deploying initial contracts'));  
