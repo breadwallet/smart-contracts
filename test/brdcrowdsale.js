@@ -645,4 +645,26 @@ contract('BRDCrowdsale', function(accounts) {
       assert(bal[1].eq(amountToSend));
     });
   });
+
+  it('should allow the owner to allocate tokens during the crowdsale', function() {
+    let amountToSend = (new web3.BigNumber(900).mul(c.exponent)); // allocate 1 eth worth
+    let amountWeiExpected = (new web3.BigNumber(1).mul(c.exponent));
+    var crowdsale;
+    var token;
+    return secondAccountAuthorized().then(function(instance) {
+      crowdsale = instance;
+      return instance.allocateTokens(accounts[2], amountToSend, {from: accounts[0]});
+    }).then(function() {
+      return crowdsale.token.call();
+    }).then(function(tokenAddr) {
+      token = BRDToken.at(tokenAddr);
+      return Promise.all([token.balanceOf(accounts[2]), crowdsale.weiRaised.call()]);
+    }).then(function(balance) {
+      assert(balance[0].eq(amountToSend));
+      assert(balance[1].eq(amountWeiExpected));
+    }).catch(function(err) {
+      console.log(err);
+      assert(false, 'no error expected');
+    });
+  });
 });
