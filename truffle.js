@@ -1,3 +1,6 @@
+var HDWalletProvider = require("truffle-hdwallet-provider");
+// var mnemonic = process.env.MNEMONIC;
+
 module.exports = {
   networks: {
     development: {
@@ -9,7 +12,11 @@ module.exports = {
       host: "localhost",
       port: 8545,
       network_id: 1,
-      gas: 4700000,
+      gas: 4600000,
+      gasPrice: 30000000000,
+      // provider: function() {
+      //   return new HDWalletProvider(mnemonic, "https://mainnet.infura.io/xSXzvbe1qPb1uMVIyJH8");
+      // },
     },
     kovan: {
       host: "localhost",
