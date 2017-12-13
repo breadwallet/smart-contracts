@@ -78,11 +78,25 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     token.mint(wallet, _ownerTokens);
   }
 
+  // immediately mint _amount tokens to the _beneficiary. this is used for OOB token purchases. 
+  function allocateTokens(address _beneficiary, uint256 _amount) onlyOwner public {
+    require(!isFinalized);
+
+    // update state
+    uint256 _weiAmount = _amount.div(rate);
+    weiRaised = weiRaised.add(_weiAmount);
+
+    // mint the tokens to the beneficiary
+    token.mint(_beneficiary, _amount);
+    
+    TokenPurchase(msg.sender, _beneficiary, _weiAmount, _amount);
+  }
+
   // mints _amount tokens to the _beneficiary minus the bonusRate
   // tokens to be locked up via the lockup contract. locked up tokens
   // are sent to the contract and may be unlocked according to
   // the lockup configuration after the sale ends
-  function lockupTokens(address _beneficiary, uint256 _amount) onlyOwner  public {
+  function lockupTokens(address _beneficiary, uint256 _amount) onlyOwner public {
     require(!isFinalized);
 
     // calculate the owner share of tokens
