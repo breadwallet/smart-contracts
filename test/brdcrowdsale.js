@@ -43,7 +43,7 @@ contract('BRDCrowdsale', function(accounts) {
         c.cap, c.minContribution, c.maxContribution,
         c.startTime, c.endTime,
         c.rate, c.ownerRate, c.bonusRate,
-        c.wallet,
+        c.wallet, c.wallet,
         {from: accounts[0]}
       ), 'error creating crowsale');
     }).then(function(contract) {
@@ -648,6 +648,7 @@ contract('BRDCrowdsale', function(accounts) {
 
   it('should allow the owner to allocate tokens during the crowdsale', function() {
     let amountToSend = (new web3.BigNumber(900).mul(c.exponent)); // allocate 1 eth worth
+    var ownerAmountExpected = (new web3.BigNumber(300).mul(c.exponent));
     let amountWeiExpected = (new web3.BigNumber(1).mul(c.exponent));
     var crowdsale;
     var token;
@@ -658,10 +659,26 @@ contract('BRDCrowdsale', function(accounts) {
       return crowdsale.token.call();
     }).then(function(tokenAddr) {
       token = BRDToken.at(tokenAddr);
-      return Promise.all([token.balanceOf(accounts[2]), crowdsale.weiRaised.call()]);
+      return Promise.all([token.balanceOf(accounts[2]), crowdsale.weiRaised.call(), token.balanceOf(accounts[0])]);
     }).then(function(balance) {
       assert(balance[0].eq(amountToSend));
       assert(balance[1].eq(amountWeiExpected));
+      assert(balance[2].eq(ownerAmountExpected));
+    }).catch(function(err) {
+      console.log(err);
+      assert(false, 'no error expected');
+    });
+  });
+
+  it('should allow owner to set the cap before the crowdsale has started', function() {
+    var crowdsale;
+    return newContract().then(function(contract) {
+      crowdsale = contract;
+      return contract.setCap(c.cap.mul(2));
+    }).then(function() {
+      return crowdsale.cap.call();
+    }).then(function(cap) {
+      assert(cap.eq(c.cap.mul(2)));
     }).catch(function(err) {
       console.log(err);
       assert(false, 'no error expected');
