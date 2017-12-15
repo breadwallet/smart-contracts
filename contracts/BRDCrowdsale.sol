@@ -27,6 +27,9 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // number of tokens per 100 to lock up in lockupTokens()
   uint256 public bonusRate;
 
+  // the address to which the owner share of tokens are sent
+  address public tokenWallet;
+
   // crowdsale authorizer contract determines who can participate
   BRDCrowdsaleAuthorizer public authorizer;
 
@@ -43,16 +46,19 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint256 _rate,        // tokens per wei
     uint256 _ownerRate,   // owner tokens per buyer wei
     uint256 _bonusRate,   // percentage of tokens to lockup
-    address _wallet)      // target funds wallet
+    address _wallet,      // target eth wallet
+    address _tokenWallet) // target token wallet
     Crowdsale(_startTime, _endTime, _rate, _wallet)
    public
   {
     require(_cap > 0);
+    require(_tokenWallet != 0x0);
     cap = _cap;
     minContribution = _minWei;
     maxContribution = _maxWei;
     ownerRate = _ownerRate;
     bonusRate = _bonusRate;
+    tokenWallet = _tokenWallet;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
@@ -74,8 +80,8 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     super.buyTokens(_beneficiary);
     // calculate the owner share of tokens
     uint256 _ownerTokens = msg.value.mul(ownerRate);
-    // mint the owner share and send to the owner wallet
-    token.mint(wallet, _ownerTokens);
+    // mint the owner share and send to the owner toke wallet
+    token.mint(tokenWallet, _ownerTokens);
   }
 
   // immediately mint _amount tokens to the _beneficiary. this is used for OOB token purchases. 
@@ -88,6 +94,10 @@ contract BRDCrowdsale is FinalizableCrowdsale {
 
     // mint the tokens to the beneficiary
     token.mint(_beneficiary, _amount);
+
+    // mint the owner share tokens 
+    uint256 _ownerTokens = _weiAmount.mul(ownerRate);
+    token.mint(tokenWallet, _ownerTokens);
     
     TokenPurchase(msg.sender, _beneficiary, _weiAmount, _amount);
   }
@@ -102,7 +112,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     // calculate the owner share of tokens
     uint256 _ownerTokens = ownerRate.mul(_amount).div(rate);
     // mint the owner share and send to the owner wallet
-    token.mint(wallet, _ownerTokens);
+    token.mint(tokenWallet, _ownerTokens);
 
     // calculate the amount of tokens to be locked up
     uint256 _lockupTokens = bonusRate.mul(_amount).div(100);
