@@ -159,6 +159,13 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     token = _token;
   }
 
+  // set the cap on the contract if the crowdsale hasn't started
+  function setCap(uint256 _newCap) onlyOwner public {
+    require(_newCap > 0);
+    require(!hasStarted());
+    cap = _newCap;
+  }
+
   // allows maxContribution to be modified
   function setMaxContribution(uint256 _newMaxContribution) onlyOwner public {
     maxContribution = _newMaxContribution;
