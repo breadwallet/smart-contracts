@@ -105,7 +105,7 @@ function doDeploy() {
         console.log('lockup args:', lockupArgs);
     
         var crowdsaleArgs = encodeConstructorArgs(
-            ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'address'],
+            ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'address', 'address'],
             c.creationArguments
         );
         console.log('crowdsale args:', crowdsaleArgs);
