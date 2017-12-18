@@ -5,7 +5,7 @@ module.exports = {
   networks: {
     development: {
       host: "localhost",
-      port: 8545,
+      port: 8547,
       network_id: "*" // Match any network id
     },
     mainnet: {
@@ -13,7 +13,7 @@ module.exports = {
       port: 8545,
       network_id: 1,
       gas: 4600000,
-      gasPrice: 30000000000,
+      gasPrice: 45000000000,
       // provider: function() {
       //   return new HDWalletProvider(mnemonic, "https://mainnet.infura.io/xSXzvbe1qPb1uMVIyJH8");
       // },
