@@ -141,8 +141,8 @@
   ],
   "bytecode": "0x6060604052336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555061091d806100536000396000f300606060405260043610610083576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806346e7ccac146100885780634a4666c1146100d95780638b69759d146101125780638da5cb5b1461014b578063a9a8679b146101a0578063f2fde38b146101d9578063fe9fbb8014610212575b600080fd5b341561009357600080fd5b6100bf600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610263565b604051808215151515815260200191505060405180910390f35b34156100e457600080fd5b610110600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610317565b005b341561011d57600080fd5b610149600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610421565b005b341561015657600080fd5b61015e61057a565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156101ab57600080fd5b6101d7600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190505061059f565b005b34156101e457600080fd5b610210600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190505061073f565b005b341561021d57600080fd5b610249600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610894565b604051808215151515815260200191505060405180910390f35b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161480610310575060011515600260008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff161515145b9050919050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614806103bb5750600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff165b15156103c657600080fd5b6001600260008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff02191690831515021790555050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614806104c55750600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff165b15156104d057600080fd5b600260008273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff16151561052857600080fd5b600260008273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81549060ff021916905550565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614806106435750600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff165b151561064e57600080fd5b600160008273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff16151561073c5760018060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff0219169083151502179055508073ffffffffffffffffffffffffffffffffffffffff167fdc84e3a4c83602050e3865df792a4e6800211a79ac60db94e703a820ce89292460405160405180910390a25b50565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561079a57600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16141515156107d657600080fd5b8073ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600060011515600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615151490509190505600a165627a7a723058207bf2c31c97fdc94c3844022ea03868a49da87172ee6493a5db5132674ff28e4e0029",
   "deployedBytecode": "0x606060405260043610610083576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806346e7ccac146100885780634a4666c1146100d95780638b69759d146101125780638da5cb5b1461014b578063a9a8679b146101a0578063f2fde38b146101d9578063fe9fbb8014610212575b600080fd5b341561009357600080fd5b6100bf600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610263565b604051808215151515815260200191505060405180910390f35b34156100e457600080fd5b610110600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610317565b005b341561011d57600080fd5b610149600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610421565b005b341561015657600080fd5b61015e61057a565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156101ab57600080fd5b6101d7600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190505061059f565b005b34156101e457600080fd5b610210600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190505061073f565b005b341561021d57600080fd5b610249600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610894565b604051808215151515815260200191505060405180910390f35b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161480610310575060011515600260008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff161515145b9050919050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614806103bb5750600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff165b15156103c657600080fd5b6001600260008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff02191690831515021790555050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614806104c55750600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff165b15156104d057600080fd5b600260008273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff16151561052857600080fd5b600260008273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81549060ff021916905550565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614806106435750600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff165b151561064e57600080fd5b600160008273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff16151561073c5760018060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff0219169083151502179055508073ffffffffffffffffffffffffffffffffffffffff167fdc84e3a4c83602050e3865df792a4e6800211a79ac60db94e703a820ce89292460405160405180910390a25b50565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561079a57600080fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16141515156107d657600080fd5b8073ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600060011515600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615151490509190505600a165627a7a723058207bf2c31c97fdc94c3844022ea03868a49da87172ee6493a5db5132674ff28e4e0029",
-  "sourceMap": "342:2144:1:-;;;509:10:11;501:5;;:18;;;;;;;;;;;;;;;;;;342:2144:1;;;;;;",
-  "deployedSourceMap": "342:2144:1:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1908:155;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;859:177;;;;;;;;;;;;;;;;;;;;;;;;;;;;1186:282;;;;;;;;;;;;;;;;;;;;;;;;;;;;238:20:11;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1526:311:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;834:169:11;;;;;;;;;;;;;;;;;;;;;;;;;;;;2163:137:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1908:155;1973:18;2020:5;;;;;;;;;;;2006:19;;:10;:19;;;:52;;;;2054:4;2029:29;;:11;:21;2041:8;2029:21;;;;;;;;;;;;;;;;;;;;;;;;;:29;;;2006:52;1999:59;;1908:155;;;:::o;859:177::-;2439:5;;;;;;;;;;;2425:19;;:10;:19;;;:46;;;;2448:11;:23;2460:10;2448:23;;;;;;;;;;;;;;;;;;;;;;;;;2425:46;2417:55;;;;;;;;1027:4;997:11;:27;1009:14;997:27;;;;;;;;;;;;;;;;:34;;;;;;;;;;;;;;;;;;859:177;:::o;1186:282::-;2439:5;;;;;;;;;;;2425:19;;:10;:19;;;:46;;;;2448:11;:23;2460:10;2448:23;;;;;;;;;;;;;;;;;;;;;;;;;2425:46;2417:55;;;;;;;;1360:11;:30;1372:17;1360:30;;;;;;;;;;;;;;;;;;;;;;;;;1352:39;;;;;;;;1433:11;:30;1445:17;1433:30;;;;;;;;;;;;;;;;1426:37;;;;;;;;;;;1186:282;:::o;238:20:11:-;;;;;;;;;;;;;:::o;1526:311:1:-;2439:5;;;;;;;;;;;2425:19;;:10;:19;;;:46;;;;2448:11;:23;2460:10;2448:23;;;;;;;;;;;;;;;;;;;;;;;;;2425:46;2417:55;;;;;;;;1613:18;:31;1632:11;1613:31;;;;;;;;;;;;;;;;;;;;;;;;;1612:32;1608:225;;;1756:4;1722:18;:31;1741:11;1722:31;;;;;;;;;;;;;;;;:38;;;;;;;;;;;;;;;;;;1814:11;1803:23;;;;;;;;;;;;1608:225;1526:311;:::o;834:169:11:-;654:5;;;;;;;;;;;640:19;;:10;:19;;;632:28;;;;;;;;930:1;910:22;;:8;:22;;;;902:31;;;;;;;;967:8;939:37;;960:5;;;;;;;;;;;939:37;;;;;;;;;;;;990:8;982:5;;:16;;;;;;;;;;;;;;;;;;834:169;:::o;2163:137:1:-;2228:16;2291:4;2259:36;;:18;:28;2278:8;2259:28;;;;;;;;;;;;;;;;;;;;;;;;;:36;;;2252:43;;2163:137;;;:::o",
+  "sourceMap": "342:2144:1:-;;;509:10:10;501:5;;:18;;;;;;;;;;;;;;;;;;342:2144:1;;;;;;",
+  "deployedSourceMap": "342:2144:1:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1908:155;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;859:177;;;;;;;;;;;;;;;;;;;;;;;;;;;;1186:282;;;;;;;;;;;;;;;;;;;;;;;;;;;;238:20:10;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1526:311:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;834:169:10;;;;;;;;;;;;;;;;;;;;;;;;;;;;2163:137:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1908:155;1973:18;2020:5;;;;;;;;;;;2006:19;;:10;:19;;;:52;;;;2054:4;2029:29;;:11;:21;2041:8;2029:21;;;;;;;;;;;;;;;;;;;;;;;;;:29;;;2006:52;1999:59;;1908:155;;;:::o;859:177::-;2439:5;;;;;;;;;;;2425:19;;:10;:19;;;:46;;;;2448:11;:23;2460:10;2448:23;;;;;;;;;;;;;;;;;;;;;;;;;2425:46;2417:55;;;;;;;;1027:4;997:11;:27;1009:14;997:27;;;;;;;;;;;;;;;;:34;;;;;;;;;;;;;;;;;;859:177;:::o;1186:282::-;2439:5;;;;;;;;;;;2425:19;;:10;:19;;;:46;;;;2448:11;:23;2460:10;2448:23;;;;;;;;;;;;;;;;;;;;;;;;;2425:46;2417:55;;;;;;;;1360:11;:30;1372:17;1360:30;;;;;;;;;;;;;;;;;;;;;;;;;1352:39;;;;;;;;1433:11;:30;1445:17;1433:30;;;;;;;;;;;;;;;;1426:37;;;;;;;;;;;1186:282;:::o;238:20:10:-;;;;;;;;;;;;;:::o;1526:311:1:-;2439:5;;;;;;;;;;;2425:19;;:10;:19;;;:46;;;;2448:11;:23;2460:10;2448:23;;;;;;;;;;;;;;;;;;;;;;;;;2425:46;2417:55;;;;;;;;1613:18;:31;1632:11;1613:31;;;;;;;;;;;;;;;;;;;;;;;;;1612:32;1608:225;;;1756:4;1722:18;:31;1741:11;1722:31;;;;;;;;;;;;;;;;:38;;;;;;;;;;;;;;;;;;1814:11;1803:23;;;;;;;;;;;;1608:225;1526:311;:::o;834:169:10:-;654:5;;;;;;;;;;;640:19;;:10;:19;;;632:28;;;;;;;;930:1;910:22;;:8;:22;;;;902:31;;;;;;;;967:8;939:37;;960:5;;;;;;;;;;;939:37;;;;;;;;;;;;990:8;982:5;;:16;;;;;;;;;;;;;;;;;;834:169;:::o;2163:137:1:-;2228:16;2291:4;2259:36;;:18;:28;2278:8;2259:28;;;;;;;;;;;;;;;;;;;;;;;;;:36;;;2252:43;;2163:137;;;:::o",
   "source": "pragma solidity ^0.4.18;\n\nimport \"./zeppelin-solidity-1.4/Ownable.sol\";\n\n\n/**\n * Contract BRDCrowdsaleAuthorizer is used by the crowdsale website\n * to autorize wallets to participate in the crowdsale. Because all\n * participants must go through the KYC/AML phase, only accounts\n * listed in this contract may contribute to the crowdsale\n */\ncontract BRDCrowdsaleAuthorizer is Ownable {\n  // these accounts are authorized to participate in the crowdsale\n  mapping (address => bool) internal authorizedAccounts;\n  // these accounts are authorized to authorize accounts\n  mapping (address => bool) internal authorizers;\n\n  // emitted when a new account is authorized\n  event Authorized(address indexed _to);\n\n  // add an authorizer to the authorizers mapping. the _newAuthorizer will\n  // be able to add other authorizers and authorize crowdsale participants\n  function addAuthorizer(address _newAuthorizer) onlyOwnerOrAuthorizer public {\n    // allow the provided address to authorize accounts\n    authorizers[_newAuthorizer] = true;\n  }\n\n  // remove an authorizer from the authorizers mapping. the _bannedAuthorizer will\n  // no longer have permission to do anything on this contract\n  function removeAuthorizer(address _bannedAuthorizer) onlyOwnerOrAuthorizer public {\n    // only attempt to remove the authorizer if they are currently authorized\n    require(authorizers[_bannedAuthorizer]);\n    // remove the authorizer\n    delete authorizers[_bannedAuthorizer];\n  }\n\n  // allow an account to participate in the crowdsale\n  function authorizeAccount(address _newAccount) onlyOwnerOrAuthorizer public {\n    if (!authorizedAccounts[_newAccount]) {\n      // allow the provided account to participate in the crowdsale\n      authorizedAccounts[_newAccount] = true;\n      // emit the Authorized event\n      Authorized(_newAccount);\n    }\n  }\n\n  // returns whether or not the provided _account is an authorizer\n  function isAuthorizer(address _account) constant public returns (bool _isAuthorizer) {\n    return msg.sender == owner || authorizers[_account] == true;\n  }\n\n  // returns whether or not the provided _account is authorized to participate in the crowdsale\n  function isAuthorized(address _account) constant public returns (bool _authorized) {\n    return authorizedAccounts[_account] == true;\n  }\n\n  // allow only the contract creator or one of the authorizers to do this\n  modifier onlyOwnerOrAuthorizer() {\n    require(msg.sender == owner || authorizers[msg.sender]);\n    _;\n  }\n}\n",
   "sourcePath": "/Users/sam/dev/bread/smart-contracts/contracts/BRDCrowdsaleAuthorizer.sol",
   "ast": {
@@ -170,7 +170,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 1634,
+          "SourceUnit": 1594,
           "absolutePath": "/Users/sam/dev/bread/smart-contracts/contracts/zeppelin-solidity-1.4/Ownable.sol",
           "file": "./zeppelin-solidity-1.4/Ownable.sol",
           "scope": 652,
@@ -186,14 +186,14 @@
       {
         "attributes": {
           "contractDependencies": [
-            1633
+            1593
           ],
           "contractKind": "contract",
           "documentation": "Contract BRDCrowdsaleAuthorizer is used by the crowdsale website\nto autorize wallets to participate in the crowdsale. Because all\nparticipants must go through the KYC/AML phase, only accounts\nlisted in this contract may contribute to the crowdsale",
           "fullyImplemented": true,
           "linearizedBaseContracts": [
             651,
-            1633
+            1593
           ],
           "name": "BRDCrowdsaleAuthorizer",
           "scope": 652
@@ -210,7 +210,7 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "Ownable",
-                  "referencedDeclaration": 1633,
+                  "referencedDeclaration": 1593,
                   "type": "contract Ownable"
                 },
                 "id": 531,
@@ -648,7 +648,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2048,
+                              "referencedDeclaration": 1952,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -1238,7 +1238,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 2045,
+                                      "referencedDeclaration": 1949,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -1257,7 +1257,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 1581,
+                                  "referencedDeclaration": 1541,
                                   "type": "address",
                                   "value": "owner"
                                 },
@@ -1601,7 +1601,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2048,
+                              "referencedDeclaration": 1952,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -1657,7 +1657,7 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 2045,
+                                          "referencedDeclaration": 1949,
                                           "type": "msg",
                                           "value": "msg"
                                         },
@@ -1676,7 +1676,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 1581,
+                                      "referencedDeclaration": 1541,
                                       "type": "address",
                                       "value": "owner"
                                     },
@@ -1731,7 +1731,7 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 2045,
+                                          "referencedDeclaration": 1949,
                                           "type": "msg",
                                           "value": "msg"
                                         },
@@ -1798,8 +1798,18 @@
       "events": {},
       "links": {},
       "address": "0x44e5336c8c3f6aaeef524dfa0b48ab4724091cec"
+    },
+    "3": {
+      "events": {},
+      "links": {},
+      "address": "0x8f15e35f019fe2ba8e67e54e65ea84d53fdff579"
+    },
+    "1513572932980": {
+      "events": {},
+      "links": {},
+      "address": "0x23fba818ee495258516db1666406c9b5d769d0e9"
     }
   },
   "schemaVersion": "1.0.1",
-  "updatedAt": "2017-12-16T02:36:17.079Z"
+  "updatedAt": "2017-12-18T20:28:15.087Z"
 }
