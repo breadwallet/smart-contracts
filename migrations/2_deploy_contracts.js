@@ -2,6 +2,7 @@ var BRDCrowdsale = artifacts.require("BRDCrowdsale");
 var BRDCrowdsaleAuthorizer = artifacts.require("BRDCrowdsaleAuthorizer");
 var BRDToken = artifacts.require("BRDToken");
 var BRDLockup = artifacts.require("BRDLockup");
+var WalletSimple = artifacts.require("WalletSimple");
 var constants = require('../constants.js');
 
 function errOut(msg) {
@@ -30,7 +31,8 @@ module.exports = function(deployer, network, accounts) {
   // add token lockups
 
   deployer.deploy([
-    // BRDCrowdsaleAuthorizer,
+    [WalletSimple, [accounts[0], accounts[0], accounts[0]]],
+    BRDCrowdsaleAuthorizer,
     BRDToken,
     [BRDLockup, c.endTime, c.numIntervals, c.intervalDuration]
   ]).then(function() {
@@ -39,14 +41,14 @@ module.exports = function(deployer, network, accounts) {
       c.cap, c.minContribution, c.maxContribution,
       c.startTime, c.endTime,
       c.rate, c.ownerRate, c.bonusRate,
-      c.wallet, c.tokenWallet,
+      WalletSimple.address, WalletSimple.address,
     ).then(function() {
-      var authorizer = BRDCrowdsaleAuthorizer.at('0x56ba2109449A8Dd1074E97d4033Bf3eA5F0E7aE8');
+      var authorizer = BRDCrowdsaleAuthorizer.at(BRDCrowdsaleAuthorizer.address);
       authorizer.addAuthorizer(accounts[0])
         .catch(errOut('MIGRATE: error setting accounts[0] as authorizer'))
         .then(function() {
-          // authorizer.transferOwnership(BRDCrowdsale.address)
-          //   .catch(errOut('MIGRATE: error transfering authorizer ownership'));
+          authorizer.transferOwnership(BRDCrowdsale.address)
+            .catch(errOut('MIGRATE: error transfering authorizer ownership'));
           BRDToken.at(BRDToken.address).transferOwnership(BRDCrowdsale.address)
             .catch(errOut('MIGRATE: error transfering token ownership'));
           BRDLockup.at(BRDLockup.address).transferOwnership(BRDCrowdsale.address)
@@ -63,11 +65,11 @@ module.exports = function(deployer, network, accounts) {
             }).catch(errOut('MIGRATE: error setting lockup'));
           }).catch(errOut('MIGRATE: error setting token'));
 
-          // var authorized = initialAuthorizers[network];
-          // authorized.forEach(function(acct) {
-          //   authorizer.addAuthorizer(acct, {from: accounts[0]})
-          //     .catch(errOut('MIGRATE: error authorizing user'));
-          // });
+          var authorized = initialAuthorizers[network];
+          authorized.forEach(function(acct) {
+            authorizer.addAuthorizer(acct, {from: accounts[0]})
+              .catch(errOut('MIGRATE: error authorizing user'));
+          });
         });
     }).catch(errOut('MIGRATE: error deploying crowdsale'));
   }).catch(errOut('MIGRATE: error deploying initial contracts'));  
