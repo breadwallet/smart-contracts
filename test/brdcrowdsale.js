@@ -4,6 +4,7 @@ var BRDCrowdsaleAuthorizer = artifacts.require('BRDCrowdsaleAuthorizer');
 var BRDLockup = artifacts.require('BRDLockup');
 var constants = require('../constants.js');
 var ethers = require('ethers');
+var WalletSimple = artifacts.require('WalletSimple');
 
 
 contract('BRDCrowdsale', function(accounts) {
@@ -158,6 +159,15 @@ contract('BRDCrowdsale', function(accounts) {
         } else {
           return intervalInfo;
         }
+      });
+    });
+  }
+
+  function getEthBalance(address, at) {
+    return new Promise(function(resolve, reject) {
+      web3.eth.getBalance(address, at, function(err, res) {
+        if (err) { reject(err); }
+        else { resolve(res); }
       });
     });
   }
@@ -681,6 +691,31 @@ contract('BRDCrowdsale', function(accounts) {
       assert(cap.eq(c.cap.mul(2)));
     }).catch(function(err) {
       console.log(err);
+      assert(false, 'no error expected');
+    });
+  });
+
+  it('succeeds when forwarding eth to a smart contract wallet', function() {
+    var crowdsale;
+    var wallet;
+    var token;
+    return WalletSimple.new([accounts[0], accounts[1], accounts[2]]).then(function(instance) {
+      wallet = instance;
+      return awaitStartTime(secondAccountAuthorized(newContract({wallet: wallet.address})));
+    }).then(function(crowdsaleInstance) {
+      crowdsale = crowdsaleInstance;
+      return crowdsale.token.call();
+    }).then(function(tokenAddress) {
+      token = BRDToken.at(tokenAddress);
+      return crowdsale.sendTransaction({from: accounts[1], value: (new web3.BigNumber(1)).mul(c.exponent)});
+    }).then(function() {
+      return Promise.all([token.balanceOf(wallet.address), getEthBalance(wallet.address)]);
+    }).then(function(balance) {
+      // console.log('balance', balance.toString());
+      assert(balance[0].eq((new web3.BigNumber(c.ownerRate)).mul(c.exponent)));
+      assert(balance[1].eq((new web3.BigNumber(1)).mul(c.exponent)));
+    }).catch(function(err) {
+      console.log('err', err);
       assert(false, 'no error expected');
     });
   });
