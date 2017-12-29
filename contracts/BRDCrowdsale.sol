@@ -193,6 +193,12 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     return BRDToken(address(0));
   }
 
+  // function forwardFunds() internal {
+  //   if (!wallet.call.gas(200000).value(msg.value)()) {
+  //     revert();
+  //   }
+  // }
+
   // overriding FinalizableCrowdsale#finalization
   // finalizes minting for the token contract, disabling further minting
   function finalization() internal {
